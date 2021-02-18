@@ -1,0 +1,24 @@
+client/node_modules
+gateway/node_modules
+token/node_modules
+client/.eslintcache
+client/build
+
+token/.env
+gateway/.env
+client/.env
+
+client/.firebaserc
+client/firebase.json
+
+client/.firebase
+token/build
+token/flat
+
+
+# misc
+client/.DS_Store
+client/.env.local
+client/.env.development.local
+client/.env.test.local
+client/.env.production.local

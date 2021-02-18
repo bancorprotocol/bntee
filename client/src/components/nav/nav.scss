@@ -1,0 +1,186 @@
+.nav-container {
+  background: linear-gradient(#0b0f2c  0%, #000 100%) !important;
+  .bancor-logo-img {
+    height: 40px !important;
+    vertical-align: top !important;
+  }
+
+.btn-primary {
+   background: #fff !important;
+   color: #000 !important;
+     &:focus {
+      background: #fff !important;
+      color: #000 !important;
+    }
+    &:hover {
+     background: rgba(0,0,0,0.9) !important;
+      color: #f5f5f5 !important;    
+      border: 1px solid #fff !important;
+    }
+    &:active {
+      background: #fff !important;
+      color: #000 !important;
+    }
+   }
+
+  .app-logo-text {
+    display: inline-flex;
+    font-weight: 600;
+    font-size: 20px;
+    margin-left: 2px;
+    vertical-align: bottom;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+  .synth-container {
+    height: 40px;
+    border: 1px solid rgb(223, 223, 223);
+    border-radius: 6px;
+    padding: 4px 12px 2px 4px;
+    font-weight: 500;
+    background:: #ececec;
+    color: #575757;
+    cursor: pointer;
+    margin-right: 20px;
+    &:hover {
+      background: #e6ebf2;
+      color: #0a2540;
+      border: none !important;
+    }
+  .synth-logo {
+    height: 32px;
+  }
+  .synth-text {
+    display: inline-flex;
+    margin-left: 2px;
+    vertical-align: middle;
+    font-size: 16px;
+  }
+  }
+  .connect-button {
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 20px;
+    margin-right: 40px;
+    background: #fff;
+    color: #212529;
+    border: #fff;
+    .connect-icon {
+      margin-top: 4px;
+    }
+    &:hover {
+      background: #f5f5f5 !important;
+      color: #212529 !important;
+    }
+  }
+  .address-btn {
+    height: 40px;
+    border: 1px solid rgb(223, 223, 223);
+    color: #000;
+    background:: #fff;
+    font-size: 12px;
+    margin-right: 20px;
+    &:hover {
+      background: #e6ebf2;
+    } 
+    &:click {
+      background: #e6ebf2;
+    }       
+  .green-circle {
+    margin-left: 4px;
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    background: green;
+    display: inline-block;
+  }    
+  }
+}
+
+.navbar-nav {
+  a {
+    color: #fff !important;
+    margin-right: 20px;
+  }
+}
+
+.transaction-status-btn {
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 20px;
+    margin-right: 40px;
+    background: #f5f5f5;
+    color: #f5f5f5;
+    height: 40px;
+    display: table;
+    padding-left: 12px;
+    padding-right: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    div {
+      display: table-cell;
+      vertical-align: middle;
+      font-weight: 500;
+      font-size: 16px;
+    }
+    svg {
+      vertical-align: middle;
+      padding-bottom: 2px;
+      margin-right: 4px;
+    }
+
+    &:hover {
+      color: #fff !important;
+    }
+    .success {
+      color: #28a745;
+    }
+    .fail {
+      color: #dc3545;
+    }
+    .pending {
+      color: #000;
+    }
+}
+
+.token-balance-row {
+  background: #fff;
+  border-radius: 8px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 8px;
+  padding-right: 0px;
+  margin-right: 16px;
+.token-balance-column {
+  display: inline-block;
+  color: #fff;
+  padding: 4px 8px;
+  margin-right: 12px;
+  fot-weight: 600;
+  background: linear-gradient(#0b0f2c  0%, #000 100%);
+  border-radius: 8px;
+}
+}
+
+.token-balance-label {
+  font-size: 12px;
+  font-weight: 500;
+  margin-right: 4px;
+  display: inline-block;
+  svg {
+    margin-left: 4px;
+    color: #0b0f2c;
+  }
+}
+
+.claim-button {
+  svg {
+     margin-left: 4px;
+    color: #0b0f2c;     
+  }
+}
+
+.bancor-pre-logo {
+  font-size: 28px;
+  margin-right: 12px;
+}
