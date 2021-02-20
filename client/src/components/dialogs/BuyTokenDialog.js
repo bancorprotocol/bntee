@@ -59,8 +59,8 @@ export default class BuyTokenDialog extends Component {
       } else if (Number(amountReserve) > Number(buyProduct.reserves.main)) {
         this.setState({'errorMessage': 'Cannot buy more than available in the pool'});      
       } else if (Number(amountReserve) > 0) {
-        getLatestPrice( buyProduct, selectedCollateralToken, amountReserve).then(function(amountResponse){
-          buyToken(buyProduct, selectedCollateralToken, collateralAmountNeeded, amountResponse.priceToken);
+        getLatestPrice( buyProduct, selectedCollateralToken, amountReserve).then(function(finalAmountResponse){
+          buyToken(buyProduct, selectedCollateralToken, collateralAmountNeeded, finalAmountResponse.priceToken);
           onHide();
         });
       }

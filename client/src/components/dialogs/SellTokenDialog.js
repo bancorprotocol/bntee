@@ -99,7 +99,7 @@ export default class PlaceOrderDialog extends Component {
     }
     let userBalance = 0;
     if (sellProduct.userBalance && sellProduct.userBalance > 0) {
-      userBalance = sellProduct.userBalance.toFixed(4);
+      userBalance = Math.floor(sellProduct.userBalance * 100) / 100;
     }
     
     return (
