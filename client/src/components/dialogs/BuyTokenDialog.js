@@ -77,7 +77,7 @@ export default class BuyTokenDialog extends Component {
     const {buyProduct} = this.props;
     this.setState({'errorMessage': ''});
     if (!isNaN(value)) {
-      if (value > buyProduct.reserves.main) {
+      if (buyProduct.reserves && value > buyProduct.reserves.main) {
         this.setState({'errorMessage': 'Cannot buy more than available in pool'});      
       } else {
         this.setState({'amountReserve': value});
@@ -164,7 +164,7 @@ export default class BuyTokenDialog extends Component {
               <Col lg={5} xs={5}>
                 <div>
                   <div className="buy-amount-value">
-                    {returnPrice.priceToken ? returnPrice.priceToken.toFixed(4) : '0.00'}
+                    {returnPrice.priceToken ? new Intl.NumberFormat().format(returnPrice.priceToken) : '0.00'}
                   </div>
                   <div className="buy-token-selector">
                     <DropdownButton id="buy-token-dropdown" title={selectedCollateralToken.symbol} className="input-token-select">

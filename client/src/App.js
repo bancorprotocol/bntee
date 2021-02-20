@@ -1,5 +1,7 @@
 import AppLandingContainer from './components/landing/AppLandingContainer'
 import AppAdmin from './components/admin/AppAdmin'
+import '@formatjs/intl-numberformat/polyfill'
+import '@formatjs/intl-numberformat/locale-data/en' // locale-data for en
 
 import './App.css';
 import {

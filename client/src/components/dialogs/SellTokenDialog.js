@@ -139,7 +139,7 @@ export default class PlaceOrderDialog extends Component {
               <Col lg={5} xs={5}>
                 <div className="sell-form-value">
                 <div className="sell-token-price">
-                  {returnPrice.priceToken ? returnPrice.priceToken : '0.00'}
+                  {returnPrice.priceToken ? new Intl.NumberFormat().format(returnPrice.priceToken)  : '0.00'}
                 </div>
                 <DropdownButton id="buy-token-dropdown" title={selectedCollateralToken.symbol} className="input-token-select">
                   {collateralOptions}
