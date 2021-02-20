@@ -251,6 +251,17 @@ export default class AppLanding extends Component {
     }
   }
   
+  getLatestPrice = (product, collateral, amount) => {
+    const self = this;
+    if (!isNaN(amount) && amount > 0) {    
+      this.setState({'returnPriceFetching': true});
+      return getBuyReturnPrice( product, collateral, amount).then(function(amountResponse){
+        self.setState({'returnPrice': amountResponse, 'returnPriceFetching': false});
+        return amountResponse;
+      })
+    }
+  }
+  
   getUpdatedSellPrice = (product, collateral, amount) => {
     const self = this;
     if (!isNaN(amount) && amount > 0) {
@@ -346,7 +357,7 @@ export default class AppLanding extends Component {
           submitProductClaim={this.props.submitProductClaim} redeemProduct={redeemProduct}
           transaction={redeemTokenTransaction} onHide={this.hideClaimTokenDialog}/>
         <ThankYouDialog thankYouDialogVisible={thankYouDialogVisible} onHide={this.hideThankYouDialog}/>
-        <BuyTokenDialog buyToken={this.buyToken}
+        <BuyTokenDialog buyToken={this.buyToken} getLatestPrice={this.getLatestPrice}
           buyProduct={buyProduct} buyDialogVisible={buyDialogVisible}
           getUpdatedPurchasePrice={this.getUpdatedPurchasePrice} web3={window.web3}
           fetchUserBalance={this.fetchUserBalance} userCollateralBalance={userCollateralBalance}

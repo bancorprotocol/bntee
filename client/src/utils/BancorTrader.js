@@ -257,7 +257,7 @@ async function getAmountsIn(amountRequired, path) {
     amountRequired = poolDataAmount;
   }
   const amountRequiredValue = new Decimal(amountRequired).div(Decimal.pow(10, path[0][0].decimals));
-  return amountRequiredValue.toFixed(4, Decimal.ROUND_UP);
+  return amountRequiredValue.toFixed(3, Decimal.ROUND_UP);
 }
 
 async function getAmountInForReserve(amountOut, currentPath) {
