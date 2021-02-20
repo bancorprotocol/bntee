@@ -27,8 +27,8 @@ export default class ProductInfo extends Component {
     return (
       <div className="product-info-container">
        <ListGroup>
-        <ListGroupItem>&#128085;&nbsp; <span className="info-label">Initial {currentProduct.productName}s</span> <span className="list-group-value">{initialProductValue}</span></ListGroupItem>
-        <ListGroupItem>&#128230;&nbsp; <span className="info-label">Redeemed {currentProduct.productName}s</span> <span className="list-group-value">{redeemedProductValue}</span></ListGroupItem>
+        <ListGroupItem>&#128085;&nbsp; <span className="info-label">Initial {currentProduct.tokenSymbol}s</span> <span className="list-group-value">{initialProductValue}</span></ListGroupItem>
+        <ListGroupItem>&#128230;&nbsp; <span className="info-label">Redeemed {currentProduct.tokenSymbol}s</span> <span className="list-group-value">{redeemedProductValue}</span></ListGroupItem>
         <ListGroupItem>&#127946;&nbsp; <span className="info-label">BNTee pool value: </span> <span className="list-group-value">{mainTokenHolding} {currentProduct.tokenSymbol} {reserveTokenHolding} BNT</span></ListGroupItem>
        </ListGroup>
        <div className="price-info-label">

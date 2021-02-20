@@ -99,7 +99,7 @@ export default class PlaceOrderDialog extends Component {
     }
     let userBalance = 0;
     if (sellProduct.userBalance && sellProduct.userBalance > 0) {
-      userBalance = sellProduct.userBalance.toFixed(4);
+      userBalance = Math.floor(sellProduct.userBalance * 100) / 100;
     }
     
     return (
@@ -153,7 +153,7 @@ export default class PlaceOrderDialog extends Component {
               <Row>
                 <Col lg={7}>
                   <div className="total-container">
-                    Total ${returnPrice.priceUSD ? returnPrice.priceUSD.toFixed(2) : ''}
+                    Total ${returnPrice.priceUSD ? new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(returnPrice.priceUSD) : ''}
                   </div>
                 </Col>
                 <Col lg={5}>

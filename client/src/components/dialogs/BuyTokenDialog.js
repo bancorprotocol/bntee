@@ -49,7 +49,7 @@ export default class BuyTokenDialog extends Component {
     
   }
   buyProductToken = () => {
-    const {buyProduct, userCollateralBalance, returnPrice} = this.props;
+    const {buyProduct, userCollateralBalance, returnPrice, getLatestPrice, buyToken, onHide} = this.props;
     const { selectedCollateralToken, amountReserve} = this.state;
     const collateralAmountNeeded = returnPrice.priceToken;
     this.setState({'errorMessage': ''});    
@@ -59,8 +59,10 @@ export default class BuyTokenDialog extends Component {
       } else if (Number(amountReserve) > Number(buyProduct.reserves.main)) {
         this.setState({'errorMessage': 'Cannot buy more than available in the pool'});      
       } else if (Number(amountReserve) > 0) {
-        this.props.buyToken(buyProduct, selectedCollateralToken, collateralAmountNeeded, amountReserve);
-        this.props.onHide();
+        getLatestPrice( buyProduct, selectedCollateralToken, amountReserve).then(function(finalAmountResponse){
+          buyToken(buyProduct, selectedCollateralToken, collateralAmountNeeded, finalAmountResponse.priceToken);
+          onHide();
+        });
       }
     }
   }
@@ -179,7 +181,7 @@ export default class BuyTokenDialog extends Component {
               <Row>
                 <Col lg={7}>
                   <div className="total-container">
-                    Total ${returnPrice.priceUSD ? returnPrice.priceUSD.toFixed(2) : ''}
+                    Total {returnPrice.priceUSD ? new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(returnPrice.priceUSD) : ''}
                   </div>
                   <div className="total-sub">
                     Each token is redeemable for 1 {buyProduct.productName} shirt.

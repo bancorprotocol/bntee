@@ -4,7 +4,6 @@ import { faQuestionCircle, faEye } from '@fortawesome/free-regular-svg-icons';
 import ProductImage from '../common/ProductImage'
 import ProductInfo from './ProductInfo'
 import { Row, Col, Button} from 'react-bootstrap';
-import fireImage from '../../images/fire_logo.png';
 
 export default class ProductDisplay extends Component {
   constructor(props) {
@@ -34,7 +33,7 @@ export default class ProductDisplay extends Component {
       </div>;
       displayToggle = (
         <div className="card-stats" onClick={this.showInfoView}>
-          <div className="card-current-price">Price: <span>{currentProduct.priceUSD ? currentProduct.priceUSD : ''} USD</span></div>
+          <div className="card-current-price">Price: <span>{currentProduct.priceUSD ? new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(currentProduct.priceUSD) : ''}</span></div>
           Pricing <FontAwesomeIcon icon={faQuestionCircle}/>
         </div>        
       )
@@ -43,7 +42,7 @@ export default class ProductDisplay extends Component {
       appCurrentView = <ProductInfo currentProduct={currentProduct} />;
       displayToggle = (
         <div className="card-stats" onClick={this.showProductView}>
-          <div className="card-current-price">Price: <span>{currentProduct.priceUSD ? currentProduct.priceUSD : ''}</span></div>
+          <div className="card-current-price">Price: <span>{currentProduct.priceUSD ? new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(currentProduct.priceUSD) : ''}</span></div>
           Product Display <FontAwesomeIcon icon={faEye}/>
         </div>        
       )      

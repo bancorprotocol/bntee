@@ -269,11 +269,11 @@ async function getAmountInForReserve(amountOut, currentPath) {
   const reserveOneBalance = await PathConverterContract.methods.reserveBalance(currentPath[0].address).call();
   const reserveTwoBalance = await PathConverterContract.methods.reserveBalance(currentPath[2].address).call();
   let PoolFee = await PathConverterContract.methods.conversionFee().call();
-  PoolFee = Number(PoolFee) / 10000
+  PoolFee = new Decimal(PoolFee).div(10000)
   const reserveIn = new Decimal(reserveOneBalance);
   const reserveOut = new Decimal(reserveTwoBalance);
-  const denSubFee = new Decimal(1000).sub(PoolFee)
-  const numerator = reserveIn.mul(amountOut).mul(1000);
+  const denSubFee = new Decimal(10000).sub(PoolFee)
+  const numerator = reserveIn.mul(amountOut).mul(10000);
   const denominator = reserveOut.sub(amountOut).mul(denSubFee);  
   const amountIn = numerator.div(denominator).add(1);
   Decimal.rounding = Decimal.ROUND_UP;
