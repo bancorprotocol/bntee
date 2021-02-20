@@ -111,7 +111,7 @@ export default class PlaceOrderDialog extends Component {
           className="token-dialog"
         >
           <Modal.Header closeButton>
-            <Modal.Title>Sell {sellProduct.productName} Token</Modal.Title>
+            <Modal.Title>Sell {sellProduct.productName}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <img src={sellProduct.productFrontImageSmall} className="buy-product-image"/>
