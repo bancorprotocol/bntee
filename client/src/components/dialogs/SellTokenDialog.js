@@ -111,7 +111,7 @@ export default class PlaceOrderDialog extends Component {
           className="token-dialog"
         >
           <Modal.Header closeButton>
-            <Modal.Title>Sell {sellProduct.productName}</Modal.Title>
+            <Modal.Title>Sell {sellProduct.tokenSymbol} Token</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <img src={sellProduct.productFrontImageSmall} className="buy-product-image"/>
@@ -123,7 +123,7 @@ export default class PlaceOrderDialog extends Component {
                 className="input-token"
                 value={this.state.amountReserve}
                 onChange={this.amountReserveChanged}
-                placeHolder={`Enter amount of ${sellProduct.productName}`}
+                placeHolder={`Enter amount of ${sellProduct.tokenSymbol}`}
               />
               <div className="form-label">Your {sellProduct.tokenSymbol} balance {userBalance}</div>
               <div className="max-amount-container" onClick={this.setMaxAmount}>Sell Max</div>
