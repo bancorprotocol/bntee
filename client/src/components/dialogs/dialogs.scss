@@ -313,3 +313,12 @@ textarea:focus, input:focus{
   font-size: 12px;
   font-weight: 600;
 }
+
+@media only screen and (max-width: 600px) {
+  .buy-token-input {
+    width: 100%;
+    input {
+      width: 100% !important;
+    }
+  }
+}
