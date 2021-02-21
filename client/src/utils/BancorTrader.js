@@ -60,9 +60,9 @@ export function getTokenListPrices(productList) {
     const productListWithPrices = productList.map(function(item, idx){
       const path = [item.tokenAddress,  item.poolAddress, BNT_ADDRESS]
       return BancorNetworkContract.methods.rateByPath(path, 100000000).call().then(function(response){
-      const priceBNT = parseFloat(providerWeb3.utils.fromWei(response)).toFixed(2);
-      const priceItemUSD = Number(priceBNT) * Number(bntPriceUSD)
-        return Object.assign({}, item, {'priceBNT': priceBNT, 'priceUSD': priceItemUSD.toFixed(2)})
+      const priceBNT = new Decimal(providerWeb3.utils.fromWei(response)).toFixed(2);
+      const priceItemUSD = new Decimal(priceBNT).mul(bntPriceUSD).toFixed(2);
+        return Object.assign({}, item, {'priceBNT': priceBNT, 'priceUSD': priceItemUSD})
       });
     });
     return Promise.all(productListWithPrices).then(function(priceResponse){
@@ -167,8 +167,9 @@ export function getBuyReturnPrice(item, collateral, amount = 1) {
   const amountWei = new Decimal(amount).mul(Decimal.pow(10, TOKEN_DECIMALS)).toString()
   return getAmountsIn(amountWei, conversionPath).then(function(priceInCollateral){
     return getPriceTOKENUSD(collateral.symbol).then(function(collateralPriceUSD){
-      const priceTokenValue = Number(priceInCollateral);
-      return {'priceToken': priceTokenValue, 'priceUSD': collateralPriceUSD * priceTokenValue};
+      const priceTokenValue = new Decimal(priceInCollateral);
+      const priceUSDValue = priceTokenValue.mul(collateralPriceUSD);
+      return {'priceToken': priceTokenValue.toFixed(4, Decimal.ROUND_UP), 'priceUSD': priceUSDValue.toFixed(4, Decimal.ROUND_UP)};
     }) 
   })
 }
@@ -183,8 +184,8 @@ export function getSellReturnPrice(item, collateral, amount = 1) {
     return BancorNetworkContract.methods.rateByPath(path, amountWei).call().then(function(amountResponse){
       const priceToken = new Decimal(amountResponse).div(Decimal.pow(10, collateral.decimals)).toFixed(4, Decimal.ROUND_DOWN)
       return getPriceTOKENUSD(collateral.symbol).then(function(tokenPriceUSD){
-        const priceUSD = Number(priceToken) * tokenPriceUSD
-        return {'priceToken': Number(priceToken), 'priceUSD': priceUSD};
+        const priceUSD = new Decimal(priceToken).mul(tokenPriceUSD).toFixed(2)
+        return {'priceToken': priceToken.toString(), 'priceUSD': priceUSD};
       });
     });
     
