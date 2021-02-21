@@ -261,7 +261,7 @@ textarea:focus, input:focus{
 
 @media only screen and (max-width: 600px) {
   .buy-product-image {
-    width: 200px;
+    width: 200px !important;
   }
 }
 
