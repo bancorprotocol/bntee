@@ -261,7 +261,7 @@ textarea:focus, input:focus{
 
 @media only screen and (max-width: 600px) {
   .buy-product-image {
-    width: 200px;
+    width: 200px !important;
   }
 }
 
@@ -312,4 +312,13 @@ textarea:focus, input:focus{
 .claim-product-sublabel {
   font-size: 12px;
   font-weight: 600;
+}
+
+@media only screen and (max-width: 600px) {
+  .buy-token-input {
+    width: 100%;
+    input {
+      width: 100% !important;
+    }
+  }
 }
