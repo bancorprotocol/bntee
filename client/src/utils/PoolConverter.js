@@ -1,4 +1,6 @@
 import Web3 from 'web3'
+const Decimal = require('decimal.js');
+Decimal.set({ toExpPos: 50 });
 const LiquidityPoolConverter = require('../contracts/LiquidityPoolV1Converter.json');
 const CURRENT_NETWORK = Number(process.env.REACT_APP_NETWORK_ID);
 
@@ -17,9 +19,9 @@ export function getTokenListMeta(products) {
     const ConverterContract = new providerWeb3.eth.Contract(LiquidityPoolConverter, pItem.converterAddress);
     return ConverterContract.methods.reserveBalance(pItem.tokenAddress).call().then(function(pItemBalance) {
       return ConverterContract.methods.reserveBalance(BNT_ADDRESS).call().then(function(bntBalance) {
-        const pItemBalanceValue = Number(pItemBalance) / Math.pow(10, 8)
-        const bntBalanceValue = providerWeb3.utils.fromWei(bntBalance)
-        const reserves = {'main': parseFloat(pItemBalanceValue), 'reserve': parseFloat(bntBalanceValue)}
+        const pItemBalanceValue = new Decimal(pItemBalance).div(Decimal.pow(10, 8)).toFixed(4)
+        const bntBalanceValue = new Decimal(providerWeb3.utils.fromWei(bntBalance)).toFixed(4)
+        const reserves = {'main': pItemBalanceValue, 'reserve': bntBalanceValue}
         return Object.assign({}, pItem, {'reserves': reserves});
       });
     })
