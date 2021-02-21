@@ -148,7 +148,6 @@ export function sellProductERC20Token(item, selectedCollateralToken, amount = 1)
 
 export function getBuyReturnPrice(item, collateral, amount = 1) {
   let conversionPath = [];
-  console.log(BNT_ADDRESS);
   const BNT_DATA = CurrentCollateralList.find((c) => (c.address.toLowerCase() === BNT_ADDRESS.toLowerCase()));
   const itemData = {
     'address': item.tokenAddress,
@@ -169,7 +168,7 @@ export function getBuyReturnPrice(item, collateral, amount = 1) {
     return getPriceTOKENUSD(collateral.symbol).then(function(collateralPriceUSD){
       const priceTokenValue = new Decimal(priceInCollateral);
       const priceUSDValue = priceTokenValue.mul(collateralPriceUSD);
-      return {'priceToken': priceTokenValue.toFixed(4, Decimal.ROUND_UP), 'priceUSD': priceUSDValue.toFixed(4, Decimal.ROUND_UP)};
+      return {'priceToken': priceTokenValue.toFixed(2, Decimal.ROUND_UP), 'priceUSD': priceUSDValue.toFixed(4, Decimal.ROUND_UP)};
     }) 
   })
 }
@@ -258,7 +257,7 @@ async function getAmountsIn(amountRequired, path) {
     amountRequired = poolDataAmount;
   }
   const amountRequiredValue = new Decimal(amountRequired).div(Decimal.pow(10, path[0][0].decimals));
-  return amountRequiredValue.toFixed(3, Decimal.ROUND_UP);
+  return amountRequiredValue.toFixed(4, Decimal.ROUND_UP);
 }
 
 async function getAmountInForReserve(amountOut, currentPath) {
