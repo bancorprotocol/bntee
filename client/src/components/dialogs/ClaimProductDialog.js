@@ -13,6 +13,7 @@ export default class ClaimProductDialog extends Component {
     this.streetAddress = React.createRef();
     this.city = React.createRef();
     this.zipCode = React.createRef();
+    this.province = React.createRef();
     this.country = React.createRef();
     this.state = {
       'selectedSizeOption': 'M',
@@ -42,6 +43,7 @@ export default class ClaimProductDialog extends Component {
       city: this.city.current.value,
       zipCode: this.zipCode.current.value,
       country: this.country.current.value,   
+      state: this.province.current.value,
       walletAddress: selctedAddress.toLowerCase(),
       transactionHash: transactionHash,
       productName: redeemProduct.productName,
@@ -138,6 +140,13 @@ export default class ClaimProductDialog extends Component {
           <Form.Label>Postal Code</Form.Label>
           <Form.Control type="text" placeHolder="Postal Code" ref={this.zipCode}/>
         </Form.Group>
+        <Form.Group>
+          <Form.Label>
+            <div>State/Province</div>
+            <div>(If applicable)</div>
+          </Form.Label>
+          <Form.Control type="text" placeHolder="State/Province" ref={this.province}/>
+        </Form.Group>        
         <Form.Group>
           <Form.Label>Country</Form.Label>
           <Form.Control type="text" placeHolder="Country" ref={this.country}/>

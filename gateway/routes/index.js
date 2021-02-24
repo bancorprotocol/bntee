@@ -76,10 +76,11 @@ router.post('/submit_claim', function(req, res){
   let orderData = req.body;
   ChainUtils.verifyUserClaim(orderData).then(function(userClaimResponse){
     
-    if (!userClaimResponse) {
+    if (!userClaimResponse || !userClaimResponse.valid) {
       res.send(400, {'message': 'failure', 'data': 'Invalid user claim'})
     } else {
       orderData.status = 'pending';
+      orderData.transactionHash = userClaimResponse.transactionHash;
       const APP_HOST_URL = process.env.APP_HOST_URL;  
       orderData.timeStamp = new Date();
       const newRequest = `New product claim received\n
@@ -89,13 +90,15 @@ router.post('/submit_claim', function(req, res){
       Email- ${orderData.email}\n
       Street Address- ${orderData.streetAddress}\n
       City- ${orderData.city}\n
+      State- ${orderData.state}\n
       ZipCode- ${orderData.zipCode}\n
       Country- ${orderData.country}\n
+      Transaction Hash- ${orderData.transactionHash ? orderData.transactionHash : ''}\n
       Fulfill order here- https://printify.com/app/store/products\n
       After you are done mark order status as completed here- 
       ${APP_HOST_URL}/admin`;
     
-      slimbot.sendMessage('-1001340647345', newRequest);
+      slimbot.sendMessage(process.env.TELEGRAM_CHANNEL_ID, newRequest);
       
       const order = new Order(orderData);
       order.save({}).then(function(saveResponse){
