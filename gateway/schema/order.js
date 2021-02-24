@@ -11,6 +11,7 @@ var order = new mongoose.Schema({
   streetAddress: String,
   city: String,
   zipCode: String,
+  state: String,
   country: String,
   province: String,
   walletAddress: String,

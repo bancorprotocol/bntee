@@ -40,12 +40,41 @@ module.exports = {
       }
       return Order.find({'walletAddress': userWalletAddress.toLowerCase(), 'tokenAddress': orderData.tokenAddress.toLowerCase()}).then(function(redemptionData){
         if (totalTokensBurnt > redemptionData.length) {
-          return true;
+          const orderTxHash = getTransactionHashForOrder(redemptionData, orderData, eventFormattedData, userWalletAddress);
+          return {'valid': true, 'transactionHash': orderTxHash};
         } else {
-          return false;
+          return {'valid': false, 'transactionHash': ''};
         }
       });
   });   
   
+  }
+}
+
+function getTransactionHashForOrder(orders, orderData, eventFormattedData, userWalletAddress) {
+  if (orderData.transactionHash) {
+    return orderData.transactionHash.toLowerCase();
+  } else {
+    let orderTxHashMapping = ''
+    eventFormattedData.forEach(function(log){
+      if (log.from.toLowerCase() === userWalletAddress.toLowerCase()) {
+        const totalTokensBurnt = Number(log.value)/Math.pow(10, 8);
+        let numOrdersWithSameHash = 0;
+        if (orders.length > 0) {
+          numOrdersWithSameHash = orders.filter(function(order){
+            if (order.transactionHash &&
+               log.transaction_hash &&
+               order.transactionHash.toLowerCase() === log.transaction_hash.toLowerCase()
+            ) {
+              return order;
+            }
+          }).length;
+        }
+        if (numOrdersWithSameHash < totalTokensBurnt) {
+          orderTxHashMapping = log.transaction_hash.toLowerCase();
+        }
+      }    
+    });
+    return orderTxHashMapping;
   }
 }
