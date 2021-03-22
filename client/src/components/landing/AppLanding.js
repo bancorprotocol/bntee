@@ -308,7 +308,7 @@ export default class AppLanding extends Component {
   }
   
   render() {
-    const {token: {products, userClaimsWithMeta}, transaction: {redeemTokenTransaction, transactionStatus,
+    const {token: {products, userClaimsWithMeta}, transaction: {redeemTokenTransaction, transactionStatus, productClaim,
       buyTokenTransaction
     }} = this.props;
     const {buyProduct, buyDialogVisible, returnPrice, redeemProduct, sellProduct, sellReturnPrice,
@@ -356,7 +356,7 @@ export default class AppLanding extends Component {
         <ClaimProductDialog claimDialogVisible={claimDialogVisible}
           submitProductClaim={this.props.submitProductClaim} redeemProduct={redeemProduct}
           transaction={redeemTokenTransaction} onHide={this.hideClaimTokenDialog}/>
-        <ThankYouDialog thankYouDialogVisible={thankYouDialogVisible} onHide={this.hideThankYouDialog}/>
+        <ThankYouDialog thankYouDialogVisible={thankYouDialogVisible} onHide={this.hideThankYouDialog} productClaim={productClaim}/>
         <BuyTokenDialog buyToken={this.buyToken} getLatestPrice={this.getLatestPrice}
           buyProduct={buyProduct} buyDialogVisible={buyDialogVisible}
           getUpdatedPurchasePrice={this.getUpdatedPurchasePrice} web3={window.web3}

@@ -101,6 +101,18 @@ class AdminEditProduct extends Component {
             value={product.productBackImageLarge} 
             onChange={(evt)=>this.updateProductState('productBackImageLarge', evt)}/>
           </Form.Group>  
+          <Form.Group controlId="formProductBackImage">
+            <Form.Label>NFT Id</Form.Label>
+            <Form.Control type="text" placeholder="NFT Id"
+            value={product.nftId} 
+            onChange={(evt)=>this.updateProductState('nftId', evt)}/>
+          </Form.Group>  
+          <Form.Group controlId="formProductBackImage">
+            <Form.Label>NFT Address</Form.Label>
+            <Form.Control type="text" placeholder="NFT Address"
+            value={product.nftAddress} 
+            onChange={(evt)=>this.updateProductState('nftAddress', evt)}/>
+          </Form.Group>            
           <Form.Group controlId="formDisabledCheck">
             <Form.Check 
             type={'checkbox'}

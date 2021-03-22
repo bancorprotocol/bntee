@@ -16,7 +16,9 @@ class AdminAddProduct extends Component {
     this.productFrontImageSmall = React.createRef();
     this.productFrontImageLarge = React.createRef();    
     this.productBackImageSmall = React.createRef(); 
-    this.productBackImageLarge = React.createRef();     
+    this.productBackImageLarge = React.createRef();    
+    this.nftId = React.createRef();
+    this.nftAddress = React.createRef();
   }
   submitForm = (evt) => {
     evt.preventDefault();
@@ -32,6 +34,8 @@ class AdminAddProduct extends Component {
       productFrontImageLarge: this.productFrontImageLarge.current.value,      
       productBackImageSmall: this.productBackImageSmall.current.value,
       productBackImageLarge: this.productBackImageLarge.current.value,
+      nftId: this.nftId.current.value,
+      nftAddress: this.nftAddress.current.value,
     }
     const userToken = localStorage.getItem("auth_token");     
     axios.post(`${API_SERVER}/product`, payload, {'headers': {'token': userToken}}).then(function(dataResponse){
@@ -78,6 +82,16 @@ class AdminAddProduct extends Component {
           <Form.Group controlId="formProductBackImage">
             <Form.Label>Product Back Image Large URL (1200px width)</Form.Label>
             <Form.Control type="text" placeholder="Product Back Image URL" ref={this.productBackImageLarge} />
+          </Form.Group>
+          <Form.Group controlId="formProductBackImage">
+            <Form.Label>NFT Id</Form.Label>
+            <Form.Control type="text" placeholder="NFT Id"
+            ref={this.nftId}/>
+          </Form.Group>  
+          <Form.Group controlId="formProductBackImage">
+            <Form.Label>NFT Address</Form.Label>
+            <Form.Control type="text" placeholder="NFT Address"
+            ref={this.nftAddress}/>
           </Form.Group>           
           <Button type="submit">Add</Button>
         </form>

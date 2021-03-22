@@ -13,6 +13,7 @@ const initialState = {
   buyingToken: false,
   sellingToken: false,
   buyTokenTransaction: {},
+  productClaim: {},
 }
 
 export default function transactionReducer (state = initialState, action) {
@@ -24,11 +25,12 @@ export default function transactionReducer (state = initialState, action) {
     case REDEEM_TOKEN_FAILURE:
       return {...state, redeemTokenTransaction: {}, redeemingToken: false}
     case SUBMIT_PRODUCT_CLAIM:
-      return {...state, claimSubmitted: false}
+      return {...state, claimSubmitted: false,   productClaim: {}}
     case SUBMIT_PRODUCT_CLAIM_SUCCESS:
-      return {...state, claimSubmitted: true}
+      console.log(action.payload);
+      return {...state, claimSubmitted: true, productClaim: action.payload}
     case SUBMIT_PRODUCT_CLAIM_FAILURE:
-      return {...state, claimSubmitted: false}
+      return {...state, claimSubmitted: false, productClaim: {}}
     case BUY_TOKEN:
       return {...state, buyingToken: true, buyTokenTransaction: {}}
     case BUY_TOKEN_SUCCESS:

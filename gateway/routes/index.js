@@ -1,3 +1,4 @@
+
 require('dotenv').config();
 var express = require('express');
 var router = express.Router();
@@ -6,6 +7,7 @@ var Order = require('../schema/order');
 const Slimbot = require('slimbot');
 const slimbot = new Slimbot(process.env.SLIMBOT_API_KEY);
 const ChainUtils = require('../utils/ChainUtils');
+const OpenSea = require('../models/Opensea');
 
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -51,6 +53,8 @@ router.put('/product', function(req, res){
       productResponse.productFrontImageLarge = product.productFrontImageLarge;
       productResponse.productBackImageSmall = product.productBackImageSmall;
       productResponse.productBackImageLarge = product.productBackImageLarge; 
+      productResponse.nftId = product.nftId;
+      productResponse.nftAddress = product.nftAddress;
       productResponse.isDisabled = product.isDisabled;
       productResponse.save({}).then(function(saveResponse){
         res.send({'message': 'success'});  
@@ -61,8 +65,8 @@ router.put('/product', function(req, res){
 
 router.post(`/product`, function(req, res){
   const auth_token = req.headers.token;
-  
   var product = new Product(req.body);
+
   if (auth_token.trim() !== process.env.APP_SECRET) {
     res.send(400, {'message': 'unauthorized'});
   } else {
@@ -99,11 +103,21 @@ router.post('/submit_claim', function(req, res){
       ${APP_HOST_URL}/admin`;
     
       slimbot.sendMessage(process.env.TELEGRAM_CHANNEL_ID, newRequest);
-      
+      orderData.walletAddress = orderData.walletAddress ? orderData.walletAddress.toLowerCase() : '';
       const order = new Order(orderData);
       order.save({}).then(function(saveResponse){
-        res.send({'message': 'success'});
-      })
+        const walletAddress = orderData.walletAddress;
+        const productType = orderData.tokenSymbol;
+        
+        OpenSea.createOpenSeaListing(walletAddress, productType).then(function(openseaResponse){
+          let payload = {'message': 'success'};
+          if (openseaResponse) {
+            payload.openseaLink = openseaResponse.openseaLink;
+            payload.nftImagePreview = openseaResponse.nftImagePreview;
+          }
+          res.send(payload);
+        })
+      });
     }
   });
 })

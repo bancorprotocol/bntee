@@ -13,7 +13,9 @@ var product = new mongoose.Schema({
      productFrontImageLarge: String,     
      productBackImageSmall: String,
      productBackImageLarge: String,  
-     isDisabled: {type: Boolean, default: false}
+     isDisabled: {type: Boolean, default: false},
+     nftId: String,
+     nftAddress: String,
    });
   
 var Product = mongoose.model('product', product);
