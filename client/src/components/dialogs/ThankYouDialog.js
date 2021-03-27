@@ -3,7 +3,7 @@ import {Modal} from 'react-bootstrap';
 
 export default class ThankYouDialog extends Component {
   render() {
-    const {thankYouDialogVisible, onHide} = this.props;
+    const {thankYouDialogVisible, onHide, productClaim} = this.props;
     return (
       <Modal show={thankYouDialogVisible} onHide={onHide}>
         <Modal.Header closeButton>
@@ -13,6 +13,9 @@ export default class ThankYouDialog extends Component {
         <div className="thankyou-body">
           <div>You will receive an email shortly</div>
           <div>once your order has been shipped.</div>
+          <div className="nft-claim-btn">
+            <a href={`${productClaim.openseaLink}`} target="_blank">Claim your special edition BNTEE NFT </a>
+          </div>
           <div className="thankyou-footer">
             <div>See the "redeemable items" tab to view remaining physical items</div>
             <div>that you are eligible to claim.</div>

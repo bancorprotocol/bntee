@@ -21,6 +21,8 @@ var order = new mongoose.Schema({
   tokenAddress: String,
   dateRedeemed: {type: Date, default: new Date()},
   timeStamp: {type: Date, default: new Date()},
+  nftClaimed: {type: Boolean, default: false},
+  nftLink: String,
   status: {'type': String, default: 'pending'},
 });
   
