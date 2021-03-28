@@ -6,10 +6,11 @@ import {
   getPrices, getPricesSuccess, getPricesFailure,
   getPastEvents, getPastEventsSuccess, getPastEventsFailure,
   getUserWalletBalance, getUserWalletBalanceSuccess, getUserWalletBalanceFailure,
-  getUserClaims, getUserClaimsSuccess, getUserClaimsFailure  
+  getUserClaims, getUserClaimsSuccess, getUserClaimsFailure,
+  getUserNFTClaims, getUserNFTClaimsSuccess, getUserNFTClaimsFailure,
 } from '../../actions/token';
 
-import { submitProductClaim, submitProductClaimSuccess, 
+import { submitProductClaim, submitProductClaimSuccess,
   submitProductClaimFailure, getApproval, getApprovalFailure,
   getApprovalSuccess, buyToken, buyTokenSuccess, buyTokenFailure,
   setTransactionStatus, sellToken, sellTokenSuccess, sellTokenFailure,
@@ -54,7 +55,7 @@ const mapDispatchToProps = (dispatch) => {
         dispatch(getMetaFailure(err));
       })
     },
-    
+
     fetchUserClaims: (walletAddress) => {
       dispatch(getUserClaims(walletAddress)).then(function(response){
         dispatch(getUserClaimsSuccess(response.payload.data));
@@ -62,7 +63,7 @@ const mapDispatchToProps = (dispatch) => {
         dispatch(getUserClaimsFailure(err));
       })
     },
-  
+
     getProductPrices: (products) => {
       dispatch(getPrices(products)).then(function(response){
         dispatch(getPricesSuccess(response.payload));
@@ -70,7 +71,7 @@ const mapDispatchToProps = (dispatch) => {
         dispatch(getPricesFailure(err))
       })
     },
-    
+
     getProductPastEvents: (products) => {
       dispatch(getPastEvents(products)).then(function(response){
         dispatch(getPastEventsSuccess(response.payload));
@@ -84,11 +85,11 @@ const mapDispatchToProps = (dispatch) => {
         dispatch(redeemTokenSuccess(response.payload));
         dispatch(setTransactionStatus("successConfirmation"));
       }).catch(function(err){
-        dispatch(setTransactionStatus("failedTransaction"));        
+        dispatch(setTransactionStatus("failedTransaction"));
         dispatch(redeemTokenFailure(err));
       })
     },
-    
+
     buyToken: (product, collateral, amount) => {
       dispatch(setTransactionStatus("pendingApproval"));
       dispatch(getApproval(collateral.address, amount)).then(function(approvalResponse){
@@ -105,7 +106,7 @@ const mapDispatchToProps = (dispatch) => {
         dispatch(getApprovalFailure(err))
       })
     },
-    
+
     sellToken: (product, collateral, amount) => {
       dispatch(setTransactionStatus("pendingApproval"));
       dispatch(getApproval(product.tokenAddress, amount)).then(function(approvalResponse){
@@ -120,8 +121,16 @@ const mapDispatchToProps = (dispatch) => {
       }).catch(function(err){
         dispatch(setTransactionStatus("failedTransaction"));
         dispatch(getApprovalFailure(err))
-      })      
+      })
     },
+
+    fetchUserNFTClaims: (userWallet) => {
+      dispatch(getUserNFTClaims(userWallet)).then(function(response){
+        dispatch(getUserNFTClaimsSuccess(response.payload.data));
+      }).catch(function(err){
+        dispatch(getUserNFTClaimsFailure(err));
+      })
+    }
 
   }
 }

@@ -53,7 +53,8 @@ export default class AppLanding extends Component {
     if (window.web3 && window.web3.currentProvider) {
       const walletAddress = window.web3.currentProvider.selectedAddress;
       if (walletAddress) {
-        this.props.fetchUserClaims(walletAddress)
+        this.props.fetchUserClaims(walletAddress);
+        this.props.fetchUserNFTClaims(walletAddress);
       }
     }
     const self = this;
@@ -64,11 +65,11 @@ export default class AppLanding extends Component {
       })
     }
   }
-  
+
   onboard = () => {
     const self = this;
     const onboard = Onboard({
-    dappId: process.env.REACT_APP_BN_API, 
+    dappId: process.env.REACT_APP_BN_API,
     networkId: MAIN_NETWORK_ID,
     subscriptions: {
        wallet: wallet => {
@@ -97,15 +98,15 @@ export default class AppLanding extends Component {
     }
     selectWallet()
   }
-  
+
   disconnectWallet = () => {
-    const onboard = this.onboard()    
+    const onboard = this.onboard()
     onboard.walletReset();
     window.web3 = null;
     this.setState({web3: {}});
     this.setState({'connectionToggle': !this.state.connectionToggle});
   }
-  
+
   setCurrentProduct = (item) => {
     this.setState({'currentProduct': item})
   }
@@ -115,7 +116,7 @@ export default class AppLanding extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { token: {products, userClaimsWithMeta},
       transaction: {redeemTokenTransaction, claimSubmitted, buyingToken,
-        sellingToken, redeemingToken, 
+        sellingToken, redeemingToken,
       } } = this.props;
     if (
       (prevProps.token.productListFetching &&
@@ -130,21 +131,24 @@ export default class AppLanding extends Component {
         if (windowWeb3 && windowWeb3.currentProvider && windowWeb3.currentProvider.selectedAddress) {
           const userWalletAddress = windowWeb3.currentProvider.selectedAddress
           this.props.getUserWalletBalance(products);
-          this.props.fetchUserClaims(userWalletAddress)
+          this.props.fetchUserClaims(userWalletAddress);
+          this.props.fetchUserNFTClaims(userWalletAddress);
         }
     }
-    
+
     if (isNonEmptyObject(this.state.web3)) {
       const {web3} = this.state;
       if (web3.currentProvider && web3.currentProvider.selectedAddress) {
         const walletAddress = web3.currentProvider.selectedAddress;
         if (isEmptyObject(prevState.web3)) {
           this.props.fetchUserClaims(walletAddress);
+          this.props.fetchUserNFTClaims(walletAddress);
         } else if (prevState.web3.currentProvider && prevState.web3.currentProvider.selectedAddress){
           const prevWalletAddress = prevState.web3.currentProvider.selectedAddress;
           if (prevWalletAddress !== walletAddress) {
             window.web3 = web3;
             this.props.fetchUserClaims(walletAddress);
+            this.props.fetchUserNFTClaims(walletAddress);
           }
         }
       }
@@ -153,7 +157,7 @@ export default class AppLanding extends Component {
     if (!prevProps.transaction.claimSubmitted && claimSubmitted) {
       this.refreshApplicationState();
     }
-    
+
     if (prevProps.transaction.redeemingToken && !redeemingToken) {
       this.props.getProductList();
     }
@@ -174,7 +178,7 @@ export default class AppLanding extends Component {
       this.setState({'thankYouDialogVisible': true});
     }
   }
-  
+
   refreshApplicationState = () => {
     const { token: {products} } = this.props;
     this.props.getProductMeta(products);
@@ -186,26 +190,27 @@ export default class AppLanding extends Component {
 
       const userWalletAddress = windowWeb3.currentProvider.selectedAddress
       this.props.getUserWalletBalance(products);
-      this.props.fetchUserClaims(userWalletAddress)
-    }    
+      this.props.fetchUserClaims(userWalletAddress);
+      this.props.fetchUserNFTClaims(userWalletAddress);
+    }
   }
-  
+
   showBuyTokenDialog = (product) => {
     this.setState({'buyDialogVisible': true, 'buyProduct': product})
   }
-  
+
   showSellTokenDialog = (product) => {
     this.setState({'sellDialogVisible': true, 'sellProduct': product})
   }
-  
+
   showRedeemTokenDialog = (product) => {
-    this.setState({'redeemDialogVisible': true, 'redeemProduct': product})    
+    this.setState({'redeemDialogVisible': true, 'redeemProduct': product})
   }
-  
+
   hideBuyDialog = () => {
-     this.setState({'buyDialogVisible': false, 'buyProduct': {}})   
+     this.setState({'buyDialogVisible': false, 'buyProduct': {}})
   }
-  
+
   hideRedeemDialog = () => {
     this.setState({'redeemDialogVisible': false});
   }
@@ -218,11 +223,11 @@ export default class AppLanding extends Component {
     })
     this.props.buyToken(product, collateral, amount);
   }
-  
+
   sellToken = (product, collateral, amount) => {
-    this.props.sellToken(product, collateral, amount)    
+    this.props.sellToken(product, collateral, amount)
   }
-  
+
   redeemToken = (product, amount) => {
     const currentProvider = window.web3 ? window.web3.currentProvider : null;
     const web3 = new Web3(currentProvider);
@@ -231,7 +236,7 @@ export default class AppLanding extends Component {
   hideSellDialog = () => {
     this.setState({'sellDialogVisible': false, sellProduct: {}})
   }
-  
+
   resetReturnPrice = () => {
     this.setState({
       returnPrice: {},
@@ -244,16 +249,16 @@ export default class AppLanding extends Component {
   getUpdatedPurchasePrice = (product, collateral, amount) => {
     const self = this;
     if (!isNaN(amount) && amount > 0) {
-    this.setState({'returnPriceFetching': true, 'returnPrice': ''})    
+    this.setState({'returnPriceFetching': true, 'returnPrice': ''})
     getBuyReturnPrice( product, collateral, amount).then(function(amountResponse){
       self.setState({'returnPrice': amountResponse, 'returnPriceFetching': false})
     })
     }
   }
-  
+
   getLatestPrice = (product, collateral, amount) => {
     const self = this;
-    if (!isNaN(amount) && amount > 0) {    
+    if (!isNaN(amount) && amount > 0) {
       this.setState({'returnPriceFetching': true});
       return getBuyReturnPrice( product, collateral, amount).then(function(amountResponse){
         self.setState({'returnPrice': amountResponse, 'returnPriceFetching': false});
@@ -261,54 +266,54 @@ export default class AppLanding extends Component {
       })
     }
   }
-  
+
   getUpdatedSellPrice = (product, collateral, amount) => {
     const self = this;
     if (!isNaN(amount) && amount > 0) {
-      this.setState({'returnPriceFetching': true, 'sellReturnPrice': ''})   
+      this.setState({'returnPriceFetching': true, 'sellReturnPrice': ''})
       getSellReturnPrice( product, collateral, amount).then(function(amountResponse){
         self.setState({'sellReturnPrice': amountResponse, 'returnPriceFetching': false})
       })
-    }    
+    }
   }
-  
+
   fetchUserBalance = (collateral) => {
     const currentProvider = window.web3 ? window.web3.currentProvider : null;
     if (currentProvider && currentProvider.selectedAddress && collateral.address) {
       const self = this;
-      const web3 = new Web3(currentProvider);      
+      const web3 = new Web3(currentProvider);
       getUserBalance(web3, collateral).then(function(userCollateralBalance){
         self.setState({'userCollateralBalance': userCollateralBalance});
       })
     }
   }
-  
+
   hideClaimTokenDialog = () => {
     this.setState({claimDialogVisible: false});
   }
-  
+
   hideThankYouDialog = () => {
     this.setState({'thankYouDialogVisible': false});
   }
-  
+
   hidePendingClaimDialog = () => {
     this.setState({'pendingClaimDialogVisible': false});
   }
-  
+
   makeClaimToProject = (product, transaction) => {
     this.setState({'claimDialogVisible': true, redeemProduct: product, pendingClaimDialogVisible: false,
       claimTransaction: transaction
     });
   }
-  
+
   hideBuyTokenSuccessDialog = () => {
     this.setState({
       'buyTokenSuccessDialogVisible': false,
     })
   }
-  
+
   render() {
-    const {token: {products, userClaimsWithMeta}, transaction: {redeemTokenTransaction, transactionStatus, productClaim,
+    const {token: {products, userClaimsWithMeta, userNftClaims}, transaction: {redeemTokenTransaction, transactionStatus, productClaim,
       buyTokenTransaction
     }} = this.props;
     const {buyProduct, buyDialogVisible, returnPrice, redeemProduct, sellProduct, sellReturnPrice,
@@ -343,9 +348,9 @@ export default class AppLanding extends Component {
       <div>
       <TopNavbar connectToWallet={this.connectToWallet} selectedAddress={selectedAddress}
         transactionStatus={transactionStatus} userClaimsWithMeta={userClaimsWithMeta}
-        openPendingClaimDialog={this.openPendingClaimDialog} products={products}/>
+        openPendingClaimDialog={this.openPendingClaimDialog} products={products} userNftClaims={userNftClaims}/>
       <Container fluid className="landing-container-fluid">
-      
+
       <div className="app-main-container">
         <BuyTokenSuccessDialog buyTokenSuccessDialogVisible={buyTokenSuccessDialogVisible}
           onHide={this.hideBuyTokenSuccessDialog} buyTokenTransaction={buyTokenTransaction}

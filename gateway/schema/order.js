@@ -23,9 +23,10 @@ var order = new mongoose.Schema({
   timeStamp: {type: Date, default: new Date()},
   nftClaimed: {type: Boolean, default: false},
   nftLink: String,
+  nftSaleMade: {type: Boolean, default: false},
   status: {'type': String, default: 'pending'},
 });
-  
+
 var Order = mongoose.model('order', order);
 
 module.exports = Order;

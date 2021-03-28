@@ -1,9 +1,10 @@
 import {GET_PRODUCT_LIST, GET_PRODUCT_LIST_SUCCESS, GET_PRODUCT_LIST_FAILURE,
   GET_META_SUCCESS,
-  GET_PRICES_SUCCESS, 
+  GET_PRICES_SUCCESS,
   GET_PAST_EVENTS_SUCCESS,
   GET_USER_WALLET_BALANCE_SUCCESS,
   GET_USER_CLAIMS_SUCCESS,
+  GET_USER_NFT_CLAIMS_SUCCESS,
 } from '../actions/token';
 import { isEmptyObject } from '../utils/ObjectUtils';
 
@@ -12,7 +13,7 @@ const initialState = {
   currentProduct: {},
   userClaims: [],
   userClaimsWithMeta: {},
-
+  userNftClaims: [],
 }
 
 export default function tokenReducer (state = initialState, action) {
@@ -59,6 +60,9 @@ export default function tokenReducer (state = initialState, action) {
         userClaimsWithMeta = state.userClaimsWithMeta
       }
       return {...state, userClaims: userClaims, userClaimsWithMeta: userClaimsWithMeta}
+    case GET_USER_NFT_CLAIMS_SUCCESS:
+      console.log(action.payload);
+      return {...state, userNftClaims: action.payload}
     default:
       return state;
   }

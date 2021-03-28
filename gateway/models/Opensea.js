@@ -27,7 +27,7 @@ export async function createOpenSeaListing(buyerAddress, type) {
     const listing = await seaport.createSellOrder({
     asset: {
       tokenAddress: productNFTAddress,
-      tokenId: productNFTId, 
+      tokenId: productNFTId,
       schemaName: "ERC1155"
     },
     accountAddress: OWNER_ADDRESS,
@@ -43,18 +43,61 @@ export async function createOpenSeaListing(buyerAddress, type) {
     orderResponse.nftClaimed = true;
     orderResponse.nftLink = openseaLink;
     return orderResponse.save({}).then(function(saveRes){
-      return {'openseaLink': openseaLink, 'nftImagePreview': nftImagePreview};  
+      console.log(saveRes);
+      return {'openseaLink': openseaLink, 'nftImagePreview': nftImagePreview};
     });
   });
-} 
+}
+
+export async function getAssetData() {
+  const seaport = getSeaNetwork();
+  return Product.find({}).then(function(productList){
+    const assetListings = productList.map(function(productData){
+      const productNFTAddress = productData.nftAddress;
+      const productNFTId = productData.nftId;
+      const assetData = seaport.api.getAsset({
+          tokenAddress: productNFTAddress,
+          tokenId: productNFTId,
+          schemaName: "ERC1155"
+      }).catch(function(err){
+        console.log(err);
+      });
+      return assetData;
+    });
+    return Promise.all(assetListings).then(function(assetListData) {
+      return assetListData;
+    })
+  })
+}
+
+// This function is not working as in the docs, need to dig deeper into docs
+export async function getAssetBalance(userWallet) {
+  const seaport = getSeaNetwork();
+  return Product.find({}).then(function(productList){
+    const assetUserBalance = productList.map(function(productData){
+    const productNFTAddress = productData.nftAddress;
+    const productNFTId = productData.nftId;
+    const balance = seaport.getAssetBalance({
+      asset: {
+        tokenAddress: productNFTAddress,
+        tokenId: productNFTId,
+        schemaName: "ERC1155"
+      },
+        userWallet
+      });
+    return balance;
+  });
+  return Promise.all(assetUserBalance).then(function(response){
+    return response;
+  });
+});
+}
 
 function getSeaNetwork() {
-let openSeaNetwork = Network.Main;
-if (parseInt(process.env.APP_NETWORK_ID) === 3) {
-  openSeaNetwork = Network.Rinkeby;
-} 
-console.log(openSeaNetwork);
-
+  let openSeaNetwork = Network.Main;
+  if (parseInt(process.env.APP_NETWORK_ID) === 3) {
+    openSeaNetwork = Network.Rinkeby;
+  }
   if (openseaObject) {
     return openseaObject;
   } else {

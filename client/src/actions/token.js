@@ -32,6 +32,35 @@ export const GET_USER_CLAIMS = 'GET_USER_CLAIMS';
 export const GET_USER_CLAIMS_SUCCESS = 'GET_USER_CLAIMS_SUCCESS';
 export const GET_USER_CLAIMS_FAILURE = 'GET_USER_CLAIMS_FAILURE';
 
+export const GET_USER_NFT_CLAIMS = 'GET_USER_NFT_CLAIMS';
+export const GET_USER_NFT_CLAIMS_SUCCESS = 'GET_USER_NFT_CLAIMS_SUCCESS';
+export const GET_USER_NFT_CLAIMS_FAILURE = 'GET_USER_NFT_CLAIMS_FAILURE';
+
+export function getUserNFTClaims(userWallet) {
+  console.log('HERE');
+  console.log(userWallet);
+  const API_URL = process.env.REACT_APP_API_URL;
+  const request = axios.get(`${API_URL}/user_nft_claims?address=${userWallet}`)
+  return {
+    type: GET_USER_NFT_CLAIMS,
+    payload: request,
+  }
+}
+
+export function getUserNFTClaimsSuccess(response) {
+  return {
+    type: GET_USER_NFT_CLAIMS_SUCCESS,
+    payload: response
+  }
+}
+
+export function getUserNFTClaimsFailure(err) {
+  return {
+    type: GET_USER_NFT_CLAIMS_FAILURE,
+    payload: err
+  }
+}
+
 export function getUserClaims(walletAddress) {
   const API_URL = process.env.REACT_APP_API_URL;
   const request = axios.get(`${API_URL}/claims?address=${walletAddress}`)
@@ -166,4 +195,3 @@ export function getProductListFailure(err) {
     payload: err
   }
 }
-

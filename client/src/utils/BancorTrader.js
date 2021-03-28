@@ -18,7 +18,7 @@ let contractRegistryAddress = process.env.REACT_APP_CONTRACT_REGISTRY_MAINNET;
 
 if (CURRENT_NETWORK === 3) {
   BNT_ADDRESS = process.env.REACT_APP_BNT_TOKEN_ROPSTEN;
-  CurrentCollateralList = collateralRopsten;  
+  CurrentCollateralList = collateralRopsten;
   RPC_URL = process.env.REACT_APP_ROPSTEN_PROVIDER_URL;
   contractRegistryAddress = process.env.REACT_APP_CONTRACT_REGISTRY_ROPSTEN;
 }
@@ -49,7 +49,19 @@ const getBancorNetworkAddress = async() => {
 const getConverterRegistryAddress = async() => {
   const converterRegistryName = providerWeb3.utils.fromAscii('BancorConverterRegistry');
   const address = await ContractRegistry.methods.addressOf(converterRegistryName).call();
-  return address; 
+  return address;
+}
+
+export async function getConverterForAnchor(converterAddress) {
+  const converterRegistryAddress = await getConverterRegistryAddress();
+  const ConverterRegistryAddress = await getConverterRegistryAddress()
+  const ConverterRegistryContract = new providerWeb3.eth.Contract(ConverterRegistryAbi, ConverterRegistryAddress);
+  const response =await ConverterRegistryContract.methods.getConvertersByAnchors([converterAddress]).call();
+  if (response && response.length > 0) {
+    return response[0];
+  } else {
+    return '';
+  }
 }
 
 export function getTokenListPrices(productList) {
@@ -95,7 +107,7 @@ export function buyProductERC20Token(item, selectedCollateralToken, amount = 1) 
           amountWei,
           1,
           '0x0000000000000000000000000000000000000000',
-          '0x0000000000000000000000000000000000000000', 
+          '0x0000000000000000000000000000000000000000',
           0
         ).send({
         from: walletAddress,
@@ -117,7 +129,7 @@ export function sellProductERC20Token(item, selectedCollateralToken, amount = 1)
   const currentProvider = windowWeb3.currentProvider;
   const userWeb3 = new Web3(currentProvider);
   const walletAddress = userWeb3.currentProvider.selectedAddress;
-  
+
   return getBancorNetworkAddress().then(function(bnAddress){
     const BancorNetworkContract = new userWeb3.eth.Contract(BancorNetworkABI, bnAddress);
     const TOKEN_ADDRESS = item.tokenAddress;
@@ -132,7 +144,7 @@ export function sellProductERC20Token(item, selectedCollateralToken, amount = 1)
         amountWei,
         1,
         '0x0000000000000000000000000000000000000000',
-        '0x0000000000000000000000000000000000000000', 
+        '0x0000000000000000000000000000000000000000',
         0
       ).send({
       from: walletAddress,
@@ -141,9 +153,9 @@ export function sellProductERC20Token(item, selectedCollateralToken, amount = 1)
         return
       })
     });
-    
+
     });
-    })  
+    })
 }
 
 export function getBuyReturnPrice(item, collateral, amount = 1) {
@@ -169,7 +181,7 @@ export function getBuyReturnPrice(item, collateral, amount = 1) {
       const priceTokenValue = new Decimal(priceInCollateral);
       const priceUSDValue = priceTokenValue.mul(collateralPriceUSD);
       return {'priceToken': priceTokenValue.toFixed(2, Decimal.ROUND_UP), 'priceUSD': priceUSDValue.toFixed(4, Decimal.ROUND_UP)};
-    }) 
+    })
   })
 }
 
@@ -187,11 +199,11 @@ export function getSellReturnPrice(item, collateral, amount = 1) {
         return {'priceToken': priceToken.toString(), 'priceUSD': priceUSD};
       });
     });
-    
+
     });
-  }); 
+  });
 }
-  
+
 
 
 export function getApprovalForBancorNetwork(collateralAddress, amount) {
@@ -207,7 +219,7 @@ export function getApprovalForBancorNetwork(collateralAddress, amount) {
       return approvalResponse;
     })
   });
-} 
+}
 
 function getApprovalBasedOnAllowance(contract, spender, amount, isEth) {
   const windowWeb3 = window.web3;
@@ -232,7 +244,7 @@ function getApprovalBasedOnAllowance(contract, spender, amount, isEth) {
           maxAmount = new Decimal('10000000').mul(Decimal.pow(10, amountDecimals)).toString()
           return contract.methods.approve(userWeb3.utils.toChecksumAddress(spender), maxAmount).send({
             from: owner
-          }).then(function(approveResetResponse){   
+          }).then(function(approveResetResponse){
             return approveResetResponse;
           });
         }
@@ -262,7 +274,7 @@ async function getAmountsIn(amountRequired, path) {
 
 async function getAmountInForReserve(amountOut, currentPath) {
   const pathPoolToken = currentPath[1];
-  const ConverterRegistryAddress = await getConverterRegistryAddress() 
+  const ConverterRegistryAddress = await getConverterRegistryAddress()
   const ConverterRegistryContract = new providerWeb3.eth.Contract(ConverterRegistryAbi, ConverterRegistryAddress);
   const poolConverterAddressList = await ConverterRegistryContract.methods.getConvertersByAnchors([pathPoolToken]).call();
   const PathConverterContract = new providerWeb3.eth.Contract(LiquidityPoolConverter, poolConverterAddressList[0]);
@@ -274,9 +286,9 @@ async function getAmountInForReserve(amountOut, currentPath) {
   const reserveOut = new Decimal(reserveTwoBalance);
   const denSubFee = new Decimal(100000).sub(PoolFee)
   const numerator = reserveIn.mul(amountOut).mul(100000);
-  const denominator = reserveOut.sub(amountOut).mul(denSubFee);  
+  const denominator = reserveOut.sub(amountOut).mul(denSubFee);
   const amountIn = numerator.div(denominator).add(1);
   Decimal.rounding = Decimal.ROUND_UP;
   return Decimal.round(amountIn).toString();
-  
+
 }

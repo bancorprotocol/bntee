@@ -8,6 +8,7 @@ const Slimbot = require('slimbot');
 const slimbot = new Slimbot(process.env.SLIMBOT_API_KEY);
 const ChainUtils = require('../utils/ChainUtils');
 const OpenSea = require('../models/Opensea');
+const Nftsale = require('../nft/index');
 
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -25,7 +26,7 @@ router.get('/products', function(req, res){
 router.get('/admin_products', function(req, res){
   Product.find({}).then(function(productList){
     res.send({'message': 'success', 'products': productList});
-  })  
+  })
 });
 
 router.get('/product', function(req, res){
@@ -35,11 +36,37 @@ router.get('/product', function(req, res){
   });
 });
 
+router.get('/create_nft_sale', function(req, res){
+  const auth = req.query.auth;
+  if (auth === process.env.APP_SECRET) {
+    Nftsale.createNFTSaleForPreviousOrders();
+    res.send({'message': 'success'});
+  } else {
+    res.send(400, {'message': 'unauthorized'});
+  }
+});
+
+router.get('/user_nft_claims', function(req, res){
+  const userWallet = req.query.address;
+  Order.find({$or: [{'walletAddress': userWallet} , {'walletAddress': userWallet.toLowerCase()}]
+   }).then(function(orderResponseList){
+    const nftLinkList = [];
+    orderResponseList.forEach(function(orderResponse){
+      if (orderResponse.nftLink && orderResponse.nftSaleMade) {
+        nftLinkList.push({'token': orderResponse.tokenSymbol, 'link': orderResponse.nftLink});
+      }
+    });
+    res.send(nftLinkList);
+  }).catch(function(err){
+    res.send(500, err);
+  });
+});
+
 router.put('/product', function(req, res){
   const auth_token = req.headers.token;
-  
+
   const {product} = req.body;
-  
+
   if (auth_token.trim() !== process.env.APP_SECRET) {
     res.send(400, {'message': 'unauthorized'});
   } else {
@@ -52,12 +79,12 @@ router.put('/product', function(req, res){
       productResponse.productFrontImageSmall = product.productFrontImageSmall;
       productResponse.productFrontImageLarge = product.productFrontImageLarge;
       productResponse.productBackImageSmall = product.productBackImageSmall;
-      productResponse.productBackImageLarge = product.productBackImageLarge; 
+      productResponse.productBackImageLarge = product.productBackImageLarge;
       productResponse.nftId = product.nftId;
       productResponse.nftAddress = product.nftAddress;
       productResponse.isDisabled = product.isDisabled;
       productResponse.save({}).then(function(saveResponse){
-        res.send({'message': 'success'});  
+        res.send({'message': 'success'});
       })
     });
   }
@@ -71,7 +98,7 @@ router.post(`/product`, function(req, res){
     res.send(400, {'message': 'unauthorized'});
   } else {
     product.save({}).then(function(saveResponse){
-      res.send({'message': 'success'}); 
+      res.send({'message': 'success'});
     });
   }
 });
@@ -79,13 +106,13 @@ router.post(`/product`, function(req, res){
 router.post('/submit_claim', function(req, res){
   let orderData = req.body;
   ChainUtils.verifyUserClaim(orderData).then(function(userClaimResponse){
-    
+
     if (!userClaimResponse || !userClaimResponse.valid) {
       res.send(400, {'message': 'failure', 'data': 'Invalid user claim'})
     } else {
       orderData.status = 'pending';
       orderData.transactionHash = userClaimResponse.transactionHash;
-      const APP_HOST_URL = process.env.APP_HOST_URL;  
+      const APP_HOST_URL = process.env.APP_HOST_URL;
       orderData.timeStamp = new Date();
       const newRequest = `New product claim received\n
       Product Name- ${orderData.productName}\n
@@ -99,16 +126,16 @@ router.post('/submit_claim', function(req, res){
       Country- ${orderData.country}\n
       Transaction Hash- ${orderData.transactionHash ? orderData.transactionHash : ''}\n
       Fulfill order here- https://printify.com/app/store/products\n
-      After you are done mark order status as completed here- 
+      After you are done mark order status as completed here-
       ${APP_HOST_URL}/admin`;
-    
+
       slimbot.sendMessage(process.env.TELEGRAM_CHANNEL_ID, newRequest);
       orderData.walletAddress = orderData.walletAddress ? orderData.walletAddress.toLowerCase() : '';
       const order = new Order(orderData);
       order.save({}).then(function(saveResponse){
         const walletAddress = orderData.walletAddress;
         const productType = orderData.tokenSymbol;
-        
+
         OpenSea.createOpenSeaListing(walletAddress, productType).then(function(openseaResponse){
           let payload = {'message': 'success'};
           if (openseaResponse) {
@@ -143,7 +170,7 @@ router.post('/login', function(req, res){
 
 router.get('/authorize', function(req, res){
   const token = req.headers.token;
-  
+
   res.send({'message': 'success'});
 })
 
@@ -158,7 +185,7 @@ router.post('/set_status', function(req, res){
   const {orderList} = req.body;
   let {status} = req.query;
   const token = req.headers.token;
-  
+
   if (!status) {
     status = 'completed';
   }
@@ -176,11 +203,11 @@ router.post('/set_status', function(req, res){
         }
     })
   });
-  
+
   Promise.all(orderListStatusResponse).then(function(listRes){
     res.send({'message': 'success'});
   })
-  
+
 })
 
 module.exports = router;

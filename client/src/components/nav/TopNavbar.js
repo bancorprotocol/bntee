@@ -9,26 +9,28 @@ import { faArrowCircleRight, faSpinner, faCheck, faTimes, faInfoCircle } from '@
 
 const renderBalanceHelpTooltip = (props) => (
   <Tooltip id="button-tooltip" {...props}>
-    <div>Balance represents the number of WHOLE tokens you have purchased, but have not yet sold or claimed. 
+    <div>Balance represents the number of WHOLE tokens you have purchased, but have not yet sold or claimed.
     You may still have decimal amounts of tokens in your wallet, that can be sold, but not used to claim physical items.</div>
   </Tooltip>
 );
 
 const renderClaimHelpTooltip = (props) => (
   <Tooltip id="button-tooltip" {...props}>
-    <div>"Redeemable Items" represent tokens you have redeemed (burned) 
+    <div>"Redeemable Items" represent tokens you have redeemed (burned)
     but have not yet claimed the physical item for.</div>
   </Tooltip>
 );
 
 export default class TopNavbar extends Component {
-  componentWillMount() {
 
+  gotoClaimsPage = (token) => {
+    console.log(token);
+    window.open(token.nftLink);
   }
   render() {
-    const {selectedAddress, transactionStatus, userClaimsWithMeta, products} = this.props;
+    const {selectedAddress, transactionStatus, userClaimsWithMeta, products, userNftClaims} = this.props;
     let connectButton = <span/>;
-    let transactionStatusButton = <span/>;  
+    let transactionStatusButton = <span/>;
     let claimButton = <span />;
     if (userClaimsWithMeta && userClaimsWithMeta.length > 0) {
       let claimsLeftToMake = 0;
@@ -44,14 +46,14 @@ export default class TopNavbar extends Component {
             overlay={renderClaimHelpTooltip}
           >
         <FontAwesomeIcon icon={faInfoCircle}/>
-        </OverlayTrigger>       
+        </OverlayTrigger>
       </Button>
       }
     }
     let userBalanceClaim = <span />;
     if (selectedAddress && selectedAddress.length > 0) {
-      connectButton = 
-      (<AddressButton address={selectedAddress} onClick={this.props.disconnectWallet}/>)   
+      connectButton =
+      (<AddressButton address={selectedAddress} onClick={this.props.disconnectWallet}/>)
       if (products.length > 0) {
       userBalanceClaim = (
         <div className="token-balance-row">
@@ -76,11 +78,11 @@ export default class TopNavbar extends Component {
         )
       }
     } else {
-      connectButton = 
+      connectButton =
       (<div>
         <Button className='connect-button' onClick={this.props.connectToWallet}>
           Connect Wallet <FontAwesomeIcon icon={faArrowCircleRight} className="connect-icon" />
-        </Button>      
+        </Button>
       </div>)
     }
     if (isNonEmptyString(transactionStatus)) {
@@ -98,6 +100,31 @@ export default class TopNavbar extends Component {
       }
       transactionStatusButton = <div className="transaction-status-btn">{statusMessage}</div>
     }
+    let nftClaimButton = <span />;
+    if (userNftClaims && userNftClaims.length > 0) {
+      const userNftClaimsMap = [];
+      const self = this;
+      userNftClaims.forEach(function(item, idx){
+        const nftClaimRowExists = userNftClaimsMap.find((i) => (i.token === item.token));
+        if (nftClaimRowExists) {
+          nftClaimRowExists.total = nftClaimRowExists.total + 1;
+        } else {
+          console.log(item);
+          userNftClaimsMap.push({'token': item.token, 'total': 1, 'nftLink': item.link});
+        }
+      });
+      nftClaimButton = (
+        <div className="token-balance-row">
+          <div className="token-balance-label">
+            NFTs
+          </div>
+          {userNftClaimsMap.map(function(pItem){
+           return <div className="token-balance-column" onClick={() => self.gotoClaimsPage(pItem)}>{pItem.token} {pItem.total}</div>
+          })}
+
+        </div>
+      )
+    }
     return (
       <Navbar expand="lg" className="nav-container">
         <Navbar.Brand href="#">
@@ -106,6 +133,7 @@ export default class TopNavbar extends Component {
         <Navbar.Toggle />
         <Navbar.Collapse className="justify-content-end">
           {userBalanceClaim}
+          {nftClaimButton}
           {claimButton}
           {transactionStatusButton}
           {connectButton}
