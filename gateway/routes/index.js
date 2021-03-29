@@ -46,6 +46,17 @@ router.get('/create_nft_sale', function(req, res){
   }
 });
 
+router.get('/product_order_details', function(req, res){
+  const auth = req.query.auth;
+  if (auth === process.env.APP_SECRET) {
+    OpenSea.getAssetData().then(function(assetResponse){
+      res.send({'message': 'success', 'data': assetResponse});
+    });
+  } else {
+    res.send(400, {'message': 'unauthorized'});
+  }
+});
+
 router.get('/user_nft_claims', function(req, res){
   const userWallet = req.query.address;
   Order.find({$or: [{'walletAddress': userWallet} , {'walletAddress': userWallet.toLowerCase()}]
@@ -60,6 +71,19 @@ router.get('/user_nft_claims', function(req, res){
   }).catch(function(err){
     res.send(500, err);
   });
+});
+
+router.get('/create_nft_claim', function(req, res){
+  const auth = req.query.auth;
+  const address = req.query.address;
+  const token = req.query.token;
+  if (auth === process.env.APP_SECRET) {
+    OpenSea.createOpenSeaListing(address, token).then(function(assetResponse){
+      res.send({'message': 'success', 'data': assetResponse});
+    });
+  } else {
+    res.send(400, {'message': 'unauthorized'});
+  }
 });
 
 router.put('/product', function(req, res){

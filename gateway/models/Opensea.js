@@ -7,7 +7,10 @@ var Product = require('../schema/product');
 var Order = require('../schema/order');
 
 const PRIVATE_KEY = process.env.APP_DEPLOYER_PRIVATE_KEY
-const PROVIDER_URL = process.env.APP_RINKEBY_PROVIDER_URL;
+let PROVIDER_URL = process.env.APP_MAINNET_PROVIDER_URL;
+if (parseInt(process.env.APP_NETWORK_ID) === 3) {
+  PROVIDER_URL = process.env.APP_RINKEBY_PROVIDER_URL;
+}
 
 var HDWalletProvider = require("truffle-hdwallet-provider");
 
@@ -36,16 +39,18 @@ module.exports = {
       console.log(error);
       return;
     });
-    const openseaLink = listing.asset.openseaLink;
-    const nftImagePreview = listing.asset.imagePreviewUrl;
-    return Order.findOne({'walletAddress': buyerAddress}).then(function(orderResponse){
-      orderResponse.nftClaimed = true;
-      orderResponse.nftLink = openseaLink;
-      return orderResponse.save({}).then(function(saveRes){
-        console.log(saveRes);
-        return {'openseaLink': openseaLink, 'nftImagePreview': nftImagePreview};
+    if (listing && listing.asset) {
+      const openseaLink = listing.asset.openseaLink;
+      const nftImagePreview = listing.asset.imagePreviewUrl;
+      return Order.findOne({'walletAddress': buyerAddress}).then(function(orderResponse){
+        orderResponse.nftClaimed = true;
+        orderResponse.nftLink = openseaLink;
+        return orderResponse.save({}).then(function(saveRes){
+          console.log(saveRes);
+          return {'openseaLink': openseaLink, 'nftImagePreview': nftImagePreview};
+        });
       });
-    });
+    }
   },
   getAssetData: async function() {
     const seaport = getSeaNetwork();
