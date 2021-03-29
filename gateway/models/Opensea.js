@@ -17,78 +17,78 @@ const OWNER_ADDRESS = process.env.APP_DEPLOYER_ADDRESS;
 
 let openseaObject;
 
-export async function createOpenSeaListing(buyerAddress, type) {
+module.exports = {
+  createOpenSeaListing: async function(buyerAddress, type) {
     const productData = await Product.findOne({'tokenSymbol': type});
     const productNFTAddress = productData.nftAddress;
     const productNFTId = productData.nftId;
     const seaport = getSeaNetwork();
     const listing = await seaport.createSellOrder({
-    asset: {
-      tokenAddress: productNFTAddress,
-      tokenId: productNFTId,
-      schemaName: "ERC1155"
-    },
-    accountAddress: OWNER_ADDRESS,
-    startAmount: 0,
-    buyerAddress,
-  }).catch((error) => {
-    console.log(error);
-    return;
-  });
-  const openseaLink = listing.asset.openseaLink;
-  const nftImagePreview = listing.asset.imagePreviewUrl;
-  return Order.findOne({'walletAddress': buyerAddress}).then(function(orderResponse){
-    orderResponse.nftClaimed = true;
-    orderResponse.nftLink = openseaLink;
-    return orderResponse.save({}).then(function(saveRes){
-      console.log(saveRes);
-      return {'openseaLink': openseaLink, 'nftImagePreview': nftImagePreview};
-    });
-  });
-}
-
-export async function getAssetData() {
-  const seaport = getSeaNetwork();
-  return Product.find({}).then(function(productList){
-    const assetListings = productList.map(function(productData){
-      const productNFTAddress = productData.nftAddress;
-      const productNFTId = productData.nftId;
-      const assetData = seaport.api.getAsset({
-          tokenAddress: productNFTAddress,
-          tokenId: productNFTId,
-          schemaName: "ERC1155"
-      }).catch(function(err){
-        console.log(err);
-      });
-      return assetData;
-    });
-    return Promise.all(assetListings).then(function(assetListData) {
-      return assetListData;
-    })
-  })
-}
-
-// This function is not working as in the docs, need to dig deeper into docs
-export async function getAssetBalance(userWallet) {
-  const seaport = getSeaNetwork();
-  return Product.find({}).then(function(productList){
-    const assetUserBalance = productList.map(function(productData){
-    const productNFTAddress = productData.nftAddress;
-    const productNFTId = productData.nftId;
-    const balance = seaport.getAssetBalance({
       asset: {
         tokenAddress: productNFTAddress,
         tokenId: productNFTId,
         schemaName: "ERC1155"
       },
-        userWallet
+      accountAddress: OWNER_ADDRESS,
+      startAmount: 0,
+      buyerAddress,
+    }).catch((error) => {
+      console.log(error);
+      return;
+    });
+    const openseaLink = listing.asset.openseaLink;
+    const nftImagePreview = listing.asset.imagePreviewUrl;
+    return Order.findOne({'walletAddress': buyerAddress}).then(function(orderResponse){
+      orderResponse.nftClaimed = true;
+      orderResponse.nftLink = openseaLink;
+      return orderResponse.save({}).then(function(saveRes){
+        console.log(saveRes);
+        return {'openseaLink': openseaLink, 'nftImagePreview': nftImagePreview};
       });
-    return balance;
-  });
-  return Promise.all(assetUserBalance).then(function(response){
-    return response;
-  });
-});
+    });
+  },
+  getAssetData: async function() {
+    const seaport = getSeaNetwork();
+    return Product.find({}).then(function(productList){
+      const assetListings = productList.map(function(productData){
+        const productNFTAddress = productData.nftAddress;
+        const productNFTId = productData.nftId;
+        const assetData = seaport.api.getAsset({
+            tokenAddress: productNFTAddress,
+            tokenId: productNFTId,
+            schemaName: "ERC1155"
+        }).catch(function(err){
+          console.log(err);
+        });
+        return assetData;
+      });
+      return Promise.all(assetListings).then(function(assetListData) {
+        return assetListData;
+      })
+    })
+  },
+  getAssetBalance: async function(userWallet) {
+    const seaport = getSeaNetwork();
+    return Product.find({}).then(function(productList){
+      const assetUserBalance = productList.map(function(productData){
+      const productNFTAddress = productData.nftAddress;
+      const productNFTId = productData.nftId;
+      const balance = seaport.getAssetBalance({
+        asset: {
+          tokenAddress: productNFTAddress,
+          tokenId: productNFTId,
+          schemaName: "ERC1155"
+        },
+          userWallet
+        });
+        return balance;
+      });
+      return Promise.all(assetUserBalance).then(function(response){
+        return response;
+      });
+    });
+  },
+
 }
 
 function getSeaNetwork() {
