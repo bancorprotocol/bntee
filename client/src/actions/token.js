@@ -37,8 +37,6 @@ export const GET_USER_NFT_CLAIMS_SUCCESS = 'GET_USER_NFT_CLAIMS_SUCCESS';
 export const GET_USER_NFT_CLAIMS_FAILURE = 'GET_USER_NFT_CLAIMS_FAILURE';
 
 export function getUserNFTClaims(userWallet) {
-  console.log('HERE');
-  console.log(userWallet);
   const API_URL = process.env.REACT_APP_API_URL;
   const request = axios.get(`${API_URL}/user_nft_claims?address=${userWallet}`)
   return {

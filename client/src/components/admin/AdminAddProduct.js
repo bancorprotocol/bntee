@@ -38,15 +38,10 @@ class AdminAddProduct extends Component {
       nftId: this.nftId.current.value,
       nftAddress: this.nftAddress.current.value,
     }
-
-   getConverterForAnchor(this.poolAddress.current.value).then(function(response){
-     payload.converterAddress = response;
-     const userToken = 'ffertyuiopasdfgrtygzxcvbnm123456';
-     axios.post(`${API_SERVER}/product`, payload, {'headers': {'token': userToken}}).then(function(dataResponse){
-       self.props.fetchProductList();
-       history.replace('/admin/products');
-     });
-   })
+    axios.post(`${API_SERVER}/product`, payload, {'headers': {'token': userToken}}).then(function(dataResponse){
+      self.props.fetchProductList();
+      history.replace('/admin/products');
+    });
   }
   render() {
     return (
