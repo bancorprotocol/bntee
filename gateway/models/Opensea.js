@@ -17,8 +17,6 @@ const OWNER_ADDRESS = process.env.APP_DEPLOYER_ADDRESS;
 
 let openseaObject;
 
-
-
 export async function createOpenSeaListing(buyerAddress, type) {
     const productData = await Product.findOne({'tokenSymbol': type});
     const productNFTAddress = productData.nftAddress;
