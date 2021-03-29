@@ -20,7 +20,6 @@ export default function tokenReducer (state = initialState, action) {
   let productListData = []
   let userClaimsWithMeta;
   switch (action.type) {
-
     case GET_PRODUCT_LIST:
       return {...state, productListFetching: true}
     case GET_PRODUCT_LIST_SUCCESS:
@@ -61,7 +60,6 @@ export default function tokenReducer (state = initialState, action) {
       }
       return {...state, userClaims: userClaims, userClaimsWithMeta: userClaimsWithMeta}
     case GET_USER_NFT_CLAIMS_SUCCESS:
-      console.log(action.payload);
       return {...state, userNftClaims: action.payload}
     default:
       return state;

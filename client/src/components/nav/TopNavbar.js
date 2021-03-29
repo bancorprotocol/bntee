@@ -24,7 +24,6 @@ const renderClaimHelpTooltip = (props) => (
 export default class TopNavbar extends Component {
 
   gotoClaimsPage = (token) => {
-    console.log(token);
     window.open(token.nftLink);
   }
   render() {
@@ -109,7 +108,6 @@ export default class TopNavbar extends Component {
         if (nftClaimRowExists) {
           nftClaimRowExists.total = nftClaimRowExists.total + 1;
         } else {
-          console.log(item);
           userNftClaimsMap.push({'token': item.token, 'total': 1, 'nftLink': item.link});
         }
       });
