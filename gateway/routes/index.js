@@ -46,6 +46,33 @@ router.get('/create_nft_sale', function(req, res){
   }
 });
 
+router.get('/reset_nft_listing', function(req, res){
+  const auth = req.query.auth;
+  const token = req.query.token;
+  if (auth === process.env.APP_SECRET) {
+    Order.find({}).then(function(orderList){
+      orderList.forEach(function(orderItem){
+        if (token) {
+          if (orderItem.tokenSymbol === token) {
+            orderItem.nftLink = '';
+            orderItem.nftSaleMade = false;
+            orderItem.nftClaimed = false;
+            orderItem.save({});
+          }
+        } else {
+          orderItem.nftLink = '';
+          orderItem.nftSaleMade = false;
+          orderItem.nftClaimed = false;
+          orderItem.save({});
+        }
+      })
+    })
+    res.send({'message': 'success'});
+  } else {
+    res.send(400, {'message': 'unauthorized'});
+  }
+});
+
 router.get('/product_order_details', function(req, res){
   const auth = req.query.auth;
   if (auth === process.env.APP_SECRET) {

@@ -46,7 +46,6 @@ module.exports = {
         orderResponse.nftClaimed = true;
         orderResponse.nftLink = openseaLink;
         return orderResponse.save({}).then(function(saveRes){
-          console.log(saveRes);
           return {'openseaLink': openseaLink, 'nftImagePreview': nftImagePreview};
         });
       });
