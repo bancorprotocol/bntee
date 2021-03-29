@@ -114,7 +114,7 @@ export default class TopNavbar extends Component {
       nftClaimButton = (
         <div className="token-balance-row">
           <div className="token-balance-label">
-            NFTs
+            NFTees
           </div>
           {userNftClaimsMap.map(function(pItem){
            return <div className="token-balance-column" onClick={() => self.gotoClaimsPage(pItem)}>{pItem.token} {pItem.total}</div>
