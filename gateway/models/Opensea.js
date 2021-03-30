@@ -21,7 +21,7 @@ const OWNER_ADDRESS = process.env.APP_DEPLOYER_ADDRESS;
 let openseaObject;
 
 module.exports = {
-  createOpenSeaListing: async function(buyerAddress, type) {
+  createOpenSeaListing: async function(buyerAddress, type, orderId) {
     const productData = await Product.findOne({'tokenSymbol': type});
     const productNFTAddress = productData.nftAddress;
     const productNFTId = productData.nftId;
@@ -42,8 +42,9 @@ module.exports = {
     if (listing && listing.asset) {
       const openseaLink = listing.asset.openseaLink;
       const nftImagePreview = listing.asset.imagePreviewUrl;
-      return Order.findOne({'walletAddress': buyerAddress}).then(function(orderResponse){
+      return Order.findOne({'_id': orderId}).then(function(orderResponse){
         orderResponse.nftClaimed = true;
+        orderResponse.nftSaleMade = true;
         orderResponse.nftLink = openseaLink;
         return orderResponse.save({}).then(function(saveRes){
           return {'openseaLink': openseaLink, 'nftImagePreview': nftImagePreview};

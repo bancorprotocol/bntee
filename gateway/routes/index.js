@@ -104,8 +104,9 @@ router.get('/create_nft_claim', function(req, res){
   const auth = req.query.auth;
   const address = req.query.address;
   const token = req.query.token;
+  const orderId = req.query.orderId;
   if (auth === process.env.APP_SECRET) {
-    OpenSea.createOpenSeaListing(address, token).then(function(assetResponse){
+    OpenSea.createOpenSeaListing(address, token, orderId).then(function(assetResponse){
       res.send({'message': 'success', 'data': assetResponse});
     });
   } else {
@@ -184,10 +185,10 @@ router.post('/submit_claim', function(req, res){
       orderData.walletAddress = orderData.walletAddress ? orderData.walletAddress.toLowerCase() : '';
       const order = new Order(orderData);
       order.save({}).then(function(saveResponse){
-        const walletAddress = orderData.walletAddress;
+        const walletAddress = orderData.walletAddress.toLowerCase();
         const productType = orderData.tokenSymbol;
-
-        OpenSea.createOpenSeaListing(walletAddress, productType).then(function(openseaResponse){
+        const orderId = saveResponse._id;
+        OpenSea.createOpenSeaListing(walletAddress, productType, orderId).then(function(openseaResponse){
           let payload = {'message': 'success'};
           if (openseaResponse) {
             payload.openseaLink = openseaResponse.openseaLink;

@@ -14,7 +14,7 @@
     }
     &:hover {
      background: rgba(0,0,0,0.9) !important;
-      color: #f5f5f5 !important;    
+      color: #f5f5f5 !important;
       border: 1px solid #fff !important;
     }
     &:active {
@@ -82,10 +82,10 @@
     margin-right: 20px;
     &:hover {
       background: #e6ebf2;
-    } 
+    }
     &:click {
       background: #e6ebf2;
-    }       
+    }
   .green-circle {
     margin-left: 4px;
     height: 10px;
@@ -93,7 +93,7 @@
     border-radius: 50%;
     background: green;
     display: inline-block;
-  }    
+  }
   }
 }
 
@@ -176,11 +176,19 @@
 .claim-button {
   svg {
      margin-left: 4px;
-    color: #0b0f2c;     
+    color: #0b0f2c;
   }
 }
 
 .bancor-pre-logo {
   font-size: 28px;
   margin-right: 12px;
+}
+
+.clickable-column {
+  cursor: pointer;
+  &:hover {
+    background: #fff;
+    color: #000;
+  }
 }

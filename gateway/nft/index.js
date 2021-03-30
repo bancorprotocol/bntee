@@ -9,7 +9,11 @@ module.exports = {
         if (!orderItem.nftLink && !orderItem.nftSaleMade) {
           const timeout = 1000;
           setTimeout(function() {
-          return Opensea.createOpenSeaListing(orderItem.walletAddress, orderItem.tokenSymbol).then(function(nftSale){
+          return Opensea.createOpenSeaListing(
+            orderItem.walletAddress,
+            orderItem.tokenSymbol,
+            orderItem._id,
+          ).then(function(nftSale){
             orderItem.nftLink = nftSale.openseaLink;
             orderItem.nftSaleMade = true;
             return orderItem.save({}).then(function(saveRes){
