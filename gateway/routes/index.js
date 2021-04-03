@@ -9,6 +9,7 @@ const slimbot = new Slimbot(process.env.SLIMBOT_API_KEY);
 const ChainUtils = require('../utils/ChainUtils');
 const OpenSea = require('../models/Opensea');
 const Nftsale = require('../nft/index');
+const axios = require('axios');
 
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -16,10 +17,10 @@ router.get('/', function(req, res, next) {
 
 router.get('/products', function(req, res){
   Product.find({}).then(function(productList){
-    const responseList = productList.filter(function(p){
+    const responseProductList = productList.filter(function(p){
       return !p.isDisabled;
-    })
-    res.send({'message': 'success', 'products': responseList});
+    });
+    res.send({'message': 'success', 'products': responseProductList});
   })
 })
 
@@ -122,6 +123,7 @@ router.put('/product', function(req, res){
   if (auth_token.trim() !== process.env.APP_SECRET) {
     res.send(400, {'message': 'unauthorized'});
   } else {
+    console.log(product.variantToSizeMap);
     Product.findOne({'_id': product._id.toString()}).then(function(productResponse){
       productResponse.productName = product.productName;
       productResponse.tokenAddress = product.tokenAddress;
@@ -135,6 +137,8 @@ router.put('/product', function(req, res){
       productResponse.nftId = product.nftId;
       productResponse.nftAddress = product.nftAddress;
       productResponse.isDisabled = product.isDisabled;
+      productResponse.fulfillmentProductId = product.fulfillmentProductId;
+      productResponse.variantToSizeMap = JSON.parse(product.variantToSizeMap);
       productResponse.save({}).then(function(saveResponse){
         res.send({'message': 'success'});
       })
@@ -144,7 +148,10 @@ router.put('/product', function(req, res){
 
 router.post(`/product`, function(req, res){
   const auth_token = req.headers.token;
-  var product = new Product(req.body);
+  let reqBody = req.body;
+  reqBody.variantToSizeMap = JSON.parse(reqBody.variantToSizeMap);
+  console.log(reqBody);
+  var product = new Product(reqBody);
 
   if (auth_token.trim() !== process.env.APP_SECRET) {
     res.send(400, {'message': 'unauthorized'});
@@ -162,32 +169,30 @@ router.post('/submit_claim', function(req, res){
     if (!userClaimResponse || !userClaimResponse.valid) {
       res.send(400, {'message': 'failure', 'data': 'Invalid user claim'})
     } else {
-      orderData.status = 'pending';
-      orderData.transactionHash = userClaimResponse.transactionHash;
-      const APP_HOST_URL = process.env.APP_HOST_URL;
-      orderData.timeStamp = new Date();
-      const newRequest = `New product claim received\n
-      Product Name- ${orderData.productName}\n
-      Size- ${orderData.shirtSize}\n
-      Full Name- ${orderData.fullName}\n
-      Email- ${orderData.email}\n
-      Street Address- ${orderData.streetAddress}\n
-      City- ${orderData.city}\n
-      State- ${orderData.state}\n
-      ZipCode- ${orderData.zipCode}\n
-      Country- ${orderData.country}\n
-      Transaction Hash- ${orderData.transactionHash ? orderData.transactionHash : ''}\n
-      Fulfill order here- https://printify.com/app/store/products\n
-      After you are done mark order status as completed here-
-      ${APP_HOST_URL}/admin`;
-
-      slimbot.sendMessage(process.env.TELEGRAM_CHANNEL_ID, newRequest);
-      orderData.walletAddress = orderData.walletAddress ? orderData.walletAddress.toLowerCase() : '';
       const order = new Order(orderData);
       order.save({}).then(function(saveResponse){
         const walletAddress = orderData.walletAddress.toLowerCase();
         const productType = orderData.tokenSymbol;
         const orderId = saveResponse._id;
+        orderData.status = 'pending';
+        orderData.transactionHash = userClaimResponse.transactionHash;
+        const APP_HOST_URL = process.env.APP_HOST_URL;
+        const fulfillmentURI = `${APP_HOST_URL}/admin/fulfill/${orderId}`
+        orderData.timeStamp = new Date();
+        const newRequest = `New product claim received\n
+        Product Name- ${orderData.productName}\n
+        Size- ${orderData.shirtSize}\n
+        Full Name- ${orderData.fullName}\n
+        Email- ${orderData.email}\n
+        Street Address- ${orderData.streetAddress}\n
+        City- ${orderData.city}\n
+        State- ${orderData.state}\n
+        ZipCode- ${orderData.zipCode}\n
+        Country- ${orderData.country}\n
+        Transaction Hash- ${orderData.transactionHash ? orderData.transactionHash : ''}\n
+        Fulfill order here- ${fulfillmentURI}\n`;
+        slimbot.sendMessage(process.env.TELEGRAM_CHANNEL_ID, newRequest);
+        orderData.walletAddress = orderData.walletAddress ? orderData.walletAddress.toLowerCase() : '';
         OpenSea.createOpenSeaListing(walletAddress, productType, orderId).then(function(openseaResponse){
           let payload = {'message': 'success'};
           if (openseaResponse) {
@@ -255,11 +260,101 @@ router.post('/set_status', function(req, res){
         }
     })
   });
-
   Promise.all(orderListStatusResponse).then(function(listRes){
     res.send({'message': 'success'});
-  })
+  });
+});
 
+router.get('/submit_fulfill_order', function(req, res){
+  const orderId = req.query.orderId;
+  const auth = req.query.auth;
+  if (auth === process.env.FULFILLMENT_AUTH) {
+    Order.findOne({'_id': orderId}).then(function(orderResponse){
+      Product.findOne({'tokenSymbol': orderResponse.tokenSymbol}).then(function(productResponse){
+      const fulfillmentProductId = productResponse.fulfillmentProductId;
+        axios.get(`https://api.printify.com/v1/shops//products/${fulfillmentProductId}.json`).then(function(printerReponse){
+          const productData = printerReponse.data;
+          const orderSize = orderResponse.shirtSize.toUpperCase().trim();
+          const variantTitle = `${orderSize} / Black / 6 oz.`;
+          const variant = productData.variants.find((v) => (v.title === variantTitle));
+
+        });
+      });
+    })
+  } else {
+    res.send(400, {message: 'failure'});
+  }
+});
+
+router.get(`/fulfillment_order_details`, function(req, res){
+  const auth_token = req.headers.token;
+  const {orderId} = req.query;
+  const SHOP_ID = process.env.SHOP_ID;
+  if (auth_token.trim() !== process.env.APP_SECRET) {
+    res.send(400, {'message': 'unauthorized'});
+  } else {
+    Order.findOne({'_id': orderId}).then(function(orderResponse){
+      Product.findOne({'tokenSymbol': orderResponse.tokenSymbol}).then(function(productResponse){
+        const fulfillmentProductId = productResponse.fulfillmentProductId;
+        const FULFILLMENT_URL = `https://api.printify.com/v1/shops/${SHOP_ID}/products/${fulfillmentProductId}.json`;
+        const SHOP_TOKEN = process.env.PRINTIFY_API_KEY;
+        const HEADER = {'headers': {'Authorization': `Bearer ${SHOP_TOKEN}`}};
+        axios.get(FULFILLMENT_URL, HEADER).then(function(printerReponse){
+          const printerReponseData = printerReponse.data;
+          const orderSize = orderResponse.shirtSize.toUpperCase().trim();
+          const productMap = JSON.parse(productResponse.variantToSizeMap);
+          console.log(productMap);
+          const variantTitle = `${orderSize} / Black / 6 oz.`;
+          const variant = printerReponseData.variants.find((v) => (v.title === variantTitle));
+          const payload = {
+            product: productResponse,
+            order: orderResponse,
+            fulfillment: printerReponseData,
+            variant: variant
+          };
+          res.send(payload);
+        });
+      });
+    }).catch(function(err){
+      res.send(500, err);
+    })
+  }
+});
+
+router.post('/fulfill_order', function(req, res){
+  const payload = req.body.payload;
+  const orderId = req.query.orderId;
+  const auth_token = req.headers.token;
+  const SHOP_ID = process.env.SHOP_ID;
+  if (auth_token.trim() !== process.env.APP_SECRET) {
+    res.send(400, {'message': 'unauthorized'});
+  } else {
+    Order.findById(orderId.toString()).then(function(orderData){
+      if (orderData.status === 'pending') {
+        console.log(payload);
+        const FULFILLMENT_URL = `https://api.printify.com/v1/shops/${SHOP_ID}/orders.json`;
+        const SHOP_TOKEN = process.env.PRINTIFY_API_KEY;
+        const HEADER = {'headers': {'Authorization': `Bearer ${SHOP_TOKEN}`}};
+        axios.post(FULFILLMENT_URL, payload, HEADER).then(function(orderFulfillResponse){
+          const orderFulfillResponseData = orderFulfillResponse.data;
+          console.log(orderFulfillResponseData);
+          const orderId = orderFulfillResponseData.id;
+          const OrderProductionURI = `https://api.printify.com/v1/shops/${SHOP_ID}/orders/${orderId}/send_to_production.json`;
+          axios.post(OrderProductionURI, HEADER).then(function(productionResponse){
+            orderData.status = 'completed';
+            orderData.save({}).then(function(response){
+              res.send({'message': 'success'});
+            });
+          });
+        }).catch(function(err){
+            console.log(err.response);
+            res.send(500, err);
+        })
+      } else {
+        res.send(500, {'err': 'order already fulfilled'});
+      }
+    })
+  }
 })
 
 module.exports = router;

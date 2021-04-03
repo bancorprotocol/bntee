@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import {Form, Container, Button, Modal} from 'react-bootstrap';
 import { isEmptyString, isNonEmptyString } from '../../utils/ObjectUtils';
-
+import { countryTovalue } from './Country';
+import Select from 'react-select';
 const availableSizeOptions = ['XS', 'S', 'M' , 'L' ,'XL', '2XL' ,'3XL']
 
 export default class ClaimProductDialog extends Component {
@@ -20,7 +21,7 @@ export default class ClaimProductDialog extends Component {
       'error': ''
     }
   }
-  
+
   componentWillReceiveProps(nextProps) {
     const {onHide, claimDialogVisible, redeemProduct} = nextProps;
     if (!this.props.claimDialogVisible && claimDialogVisible) {
@@ -29,12 +30,16 @@ export default class ClaimProductDialog extends Component {
       })
     }
   }
-  
+
   submitClaimForm = (evt) => {
     evt.preventDefault();
     const {transaction: {from, transactionHash}, redeemProduct} = this.props;
     const {selectedSizeOption} = this.state;
     const selctedAddress = window.web3.currentProvider.selectedAddress;
+    let country = '';
+    if (this.country.current.state.value && this.country.current.state.value.value) {
+      country = this.country.current.state.value.value;
+    }
     const payload = {
       fullName: this.fullName.current.value,
       email: this.email.current.value,
@@ -42,7 +47,7 @@ export default class ClaimProductDialog extends Component {
       streetAddress: this.streetAddress.current.value,
       city: this.city.current.value,
       zipCode: this.zipCode.current.value,
-      country: this.country.current.value,   
+      country: country,
       state: this.province.current.value,
       walletAddress: selctedAddress.toLowerCase(),
       transactionHash: transactionHash,
@@ -64,27 +69,29 @@ export default class ClaimProductDialog extends Component {
     } else if (isEmptyString(payload.country)) {
       this.setState({'error': 'Country cannot be empty'});
     } else {
-      this.props.submitProductClaim(payload); 
+      this.props.submitProductClaim(payload);
       this.props.onHide();
     }
   }
-  
+
   selectedSizeOptionChanged = (evt) => {
     this.setState({'selectedSizeOption': evt.target.value})
   }
-  
+
   render() {
     const {onHide, claimDialogVisible, redeemProduct} = this.props;
     const {selectedSizeOption, error} = this.state;
     const sizeOptions =  availableSizeOptions.map(function(item, idx){
       return <option value={item}>{item}</option>
     });
-    
+
     let errorDisplay = <span />;
     if (isNonEmptyString(error)) {
       errorDisplay = <div className="error">{error}</div>
     }
-  
+
+    const countryOptions = countryTovalue();
+
     return (
         <Modal
           show={claimDialogVisible}
@@ -106,13 +113,13 @@ export default class ClaimProductDialog extends Component {
             Please fill in the order details to receive your purchase.
           </div>
           <div className="claim-product-label claim-product-sublabel">
-            
+
             <div>&#9888;&nbsp;You can only redeem one product at a time.
-            Check the "redeemable items" tab at the top of the shop to redeem additional items 
+            Check the "redeemable items" tab at the top of the shop to redeem additional items
             after completing this order.&nbsp;&#9888;</div>
-            
+
           </div>
-        <div className="claim-address-form">  
+        <div className="claim-address-form">
         <Form onSubmit={this.submitClaimForm}>
         <Form.Group>
           <Form.Label>Full Name</Form.Label>
@@ -127,7 +134,7 @@ export default class ClaimProductDialog extends Component {
             <Form.Control as="select" value={selectedSizeOption} onChange={this.selectedSizeOptionChanged}>
               {sizeOptions}
             </Form.Control>
-        </Form.Group>        
+        </Form.Group>
         <Form.Group>
           <Form.Label>St. Address</Form.Label>
           <Form.Control type="text" placeHolder="Street Address" ref={this.streetAddress}/>
@@ -146,10 +153,10 @@ export default class ClaimProductDialog extends Component {
             <div>(If applicable)</div>
           </Form.Label>
           <Form.Control type="text" placeHolder="State/Province" ref={this.province}/>
-        </Form.Group>        
+        </Form.Group>
         <Form.Group>
           <Form.Label>Country</Form.Label>
-          <Form.Control type="text" placeHolder="Country" ref={this.country}/>
+          <Select options={countryOptions} className='country-select-container' ref={this.country}/>
         </Form.Group>
         <div>
           {errorDisplay}
@@ -162,7 +169,7 @@ export default class ClaimProductDialog extends Component {
         </Container>
       </Modal.Body>
       </Modal>
-      
+
       )
   }
 }

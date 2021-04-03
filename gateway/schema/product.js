@@ -10,14 +10,16 @@ var product = new mongoose.Schema({
      poolAddress: String,
      converterAddress: String,
      productFrontImageSmall: String,
-     productFrontImageLarge: String,     
+     productFrontImageLarge: String,
      productBackImageSmall: String,
-     productBackImageLarge: String,  
+     productBackImageLarge: String,
      isDisabled: {type: Boolean, default: false},
      nftId: String,
      nftAddress: String,
+     fulfillmentProductId: String,
+     variantToSizeMap: [{variantType: String, variantTitle: String}]
    });
-  
+
 var Product = mongoose.model('product', product);
 
 module.exports = Product;

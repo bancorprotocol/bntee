@@ -11,6 +11,7 @@ import AdminListProducts from './AdminListProducts';
 import AdminAddProduct from './AdminAddProduct';
 import AdminListOrders from './AdminListOrders';
 import AdminEditProduct from './AdminEditProduct';
+import AdminFulfill from './AdminFulfill';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -29,7 +30,7 @@ export default class AppAdmin extends Component {
       self.setState({'orders': response.data.orders.sort(function(a, b){
         return  new Date(b.timeStamp) - new Date(a.timeStamp)
       }), orderFetchCommit: self.state.orderFetchCommit + 1});
-    });  
+    });
   }
   componentWillMount() {
     const self = this;
@@ -43,14 +44,14 @@ export default class AppAdmin extends Component {
       });
     }
   }
-  
+
   fetchProductList = () => {
     const self = this;
     axios.get(`${API_URL}/admin_products`).then((response) => {
       self.setState({'products': response.data.products});
-    });    
+    });
   }
-  
+
   submitLogin = (evt) => {
     evt.preventDefault();
     const {adminUsername, adminPassword} = this.state;
@@ -59,31 +60,31 @@ export default class AppAdmin extends Component {
       'password': adminPassword
     }
     const self = this;
-    const userToken = localStorage.getItem("auth_token");    
+    const userToken = localStorage.getItem("auth_token");
     axios.post(`${API_URL}/login`, payload).then((response) => {
       this.setState({'authToken': response.data.token});
       localStorage.setItem('auth_token', response.data.token);
       axios.get(`${API_URL}/products`).then((response) => {
         self.setState({'products': response.data.products});
-      });      
+      });
     }).catch(function(err){
       this.setState({'error': 'Invalid username or password'});
     })
   }
-  
+
   adminUsernameChanged = (evt) => {
     this.setState({'adminUsername': evt.target.value});
   }
   adminPasswordChanged = (evt) => {
     this.setState({'adminPassword': evt.target.value});
   }
-  
+
   setOrderListStatus = (orderList, status) => {
     const self = this;
     if (!status) {
       status = 'completed';
     }
-    const userToken = localStorage.getItem("auth_token");      
+    const userToken = localStorage.getItem("auth_token");
     axios.post(`${API_URL}/set_status?status=${status}`, {'orderList': orderList},  {'headers': {'token': userToken}}).then(function(response){
       self.fetchOrderList();
     })
@@ -97,7 +98,7 @@ export default class AppAdmin extends Component {
     } else if (authToken) {
       userToken = authToken;
     }
-    
+
     let homePage = <span />;
     if  (!userToken) {
       homePage = (
@@ -114,7 +115,7 @@ export default class AppAdmin extends Component {
     }
     return (
       <div>
-        <AdminTopNavbar connectToWallet={this.connectToWallet} />      
+        <AdminTopNavbar connectToWallet={this.connectToWallet} />
         <Container fluid className="admin-app-container">
         <div >
         <Switch>
@@ -123,7 +124,7 @@ export default class AppAdmin extends Component {
           </Route>
           <Route exact path="/admin/products">
             <AdminListProducts products={products} />
-          </Route>          
+          </Route>
           <Route exact path="/admin/orders">
             <AdminListOrders orders={orders} fetchOrderList={this.fetchOrderList}
             setOrderListStatus={this.setOrderListStatus} orderFetchCommit={orderFetchCommit}/>
@@ -133,6 +134,9 @@ export default class AppAdmin extends Component {
           </Route>
           <Route path="/admin/products/:id">
             <AdminEditProduct fetchProductList={this.fetchProductList}/>
+          </Route>
+          <Route path="/admin/fulfill/:id">
+            <AdminFulfill />
           </Route>
         </Switch>
         </div>

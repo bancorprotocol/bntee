@@ -130,6 +130,9 @@ export default class TopNavbar extends Component {
         </Navbar.Brand>
         <Navbar.Toggle />
         <Navbar.Collapse className="justify-content-end">
+          <div className="about-section">
+            <a href="https://blog.bancor.network/introducing-bntees-eb5d5558a1b5" target="_blank">About</a>
+          </div>
           {userBalanceClaim}
           {nftClaimButton}
           {claimButton}

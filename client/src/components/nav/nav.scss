@@ -192,3 +192,14 @@
     color: #000;
   }
 }
+
+.about-section {
+  a {
+    color: #fff;
+    margin-left: 2px;
+    margin-right: 16px;
+    &:hover {
+      color: #d3d3d3;
+    }
+  }
+}
