@@ -13,14 +13,14 @@ export function isNonEmptyObject(obj) {
 }
 
 export function isNonEmptyString(str) {
-  if (str === undefined || str === null || str.trim().length  === 0) {
+  if (str === undefined || str === null || !str || str.trim().length  === 0) {
     return false;
   }
   return true;
 }
 
 export function isEmptyString(str) {
-  if (str === undefined || str === null || str.trim().length === 0) {
+  if (str === undefined || str === null ||  !str ||  str.trim().length === 0) {
     return true;
   }
   return false;

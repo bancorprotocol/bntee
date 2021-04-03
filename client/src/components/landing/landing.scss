@@ -35,7 +35,7 @@
     &:active, &:focus {
       color: #fff !important;
       background: linear-gradient(#0b0f2c  0%, #000 100%) !important;
-      border: none !important;      
+      border: none !important;
     }
   }
   .sell-btn {
@@ -117,7 +117,7 @@
 
 .product-menu-btn.active {
   background: linear-gradient(#1f3a55 0%, #0f59d1 100%) !important;
-} 
+}
 
 .product-info-container {
   .list-group-item {
@@ -145,13 +145,13 @@
 
 @media only screen and (min-width: 601px) and (max-width: 992px) {
   .product-menu-btn, .merch-img-container, .product-menu-btn, .merch-btn-container  {
-     width: 290px !important; 
+     width: 290px !important;
   }
 }
 
 @media only screen and (max-width: 600px) {
   .product-menu-btn, .merch-img-container, .product-menu-btn, .merch-btn-container  {
-     width: 260px !important; 
+     width: 260px !important;
   }
   .merch-btn-container {
     margin-bottom: 40px;
@@ -186,7 +186,7 @@
 
 .app-main-container {
     background-image: url("./background_large.jpg") !important;
-  background-repeat: no-repeat !important;   
+  background-repeat: no-repeat !important;
   background-size: cover !important;
   position: static;
   width: 100vw;
@@ -198,9 +198,19 @@
 }
 
 
-@media only screen and (max-width: 600px) { 
+@media only screen and (max-width: 600px) {
   .app-main-container {
     background-image: url("./background_small.jpg") !important;
-  background-repeat: no-repeat !important;  
+  background-repeat: no-repeat !important;
   }
+}
+
+.country-select-container {
+  display: inline-block;
+  width:72%;
+}
+
+.product-order-button-container {
+  margin-top: 20px;
+
 }

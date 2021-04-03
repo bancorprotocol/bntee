@@ -18,6 +18,8 @@ class AdminAddProduct extends Component {
     this.productFrontImageLarge = React.createRef();
     this.productBackImageSmall = React.createRef();
     this.productBackImageLarge = React.createRef();
+    this.fulfillmentProductId = React.createRef();
+    this.variantToSizeMap = React.createRef();
     this.nftId = React.createRef();
     this.nftAddress = React.createRef();
   }
@@ -25,6 +27,14 @@ class AdminAddProduct extends Component {
     evt.preventDefault();
     const {history} = this.props;
     const self = this;
+    let variantToSizeMap = '{}';
+    if (this.variantToSizeMap.current.value) {
+      try {
+        variantToSizeMap = this.variantToSizeMap.current.value;
+      } catch (e) {
+        console.log(e);
+      }
+    }
     let payload = {
       productName: this.productName.current.value,
       tokenAddress: this.tokenAddress.current.value,
@@ -37,8 +47,11 @@ class AdminAddProduct extends Component {
       productBackImageLarge: this.productBackImageLarge.current.value,
       nftId: this.nftId.current.value,
       nftAddress: this.nftAddress.current.value,
+      fulfillmentProductId: this.fulfillmentProductId.current.value,
+      variantToSizeMap: variantToSizeMap,
     }
-    const userToken = localStorage.getItem("auth_token");    
+    console.log(payload);
+    const userToken = localStorage.getItem("auth_token");
     axios.post(`${API_SERVER}/product`, payload, {'headers': {'token': userToken}}).then(function(dataResponse){
       self.props.fetchProductList();
       history.replace('/admin/products');
@@ -93,6 +106,17 @@ class AdminAddProduct extends Component {
             <Form.Label>NFT Address</Form.Label>
             <Form.Control type="text" placeholder="NFT Address"
             ref={this.nftAddress}/>
+          </Form.Group>
+          <Form.Group controlId="formProductFulfillmentId">
+            <Form.Label>Fulfillment product ID</Form.Label>
+            <Form.Control type="text" placeholder="Fulfillment Product ID (eg. Printify)"
+            ref={this.fulfillmentProductId}/>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Variant to size map</Form.Label>
+            <Form.Control as="textarea" rows={3} ref={this.variantToSizeMap}
+             placeholder='{Enter json for variant to size map
+            eg. [{"variantType": "S", "variantTitle": "S / Black / 6 oz."}, {"variantType": "M", "variantTitle": "M / Black / 6 oz."}]}'/>
           </Form.Group>
           <Button type="submit">Add</Button>
         </form>

@@ -10,19 +10,22 @@ class AdminEditProduct extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      'product': {}
+      'product': {},
+      'variantToSizeMapString': ''
     }
   }
   componentWillMount() {
     const {match: {params}} = this.props;
     const self = this;
     axios.get(`${API_URL}/product?id=${params.id}`).then(function(response){
-      self.setState({'product': response.data.product});
+      const productData = response.data.product;
+      console.log(productData);
+      const variantToSizeMapString = JSON.stringify(productData.variantToSizeMap);
+      self.setState({'product': productData, 'variantToSizeMapString': variantToSizeMapString});
     })
   }
   updateProductState = (key, evt) => {
-    const val = evt.target.value;
-    console.log(val);
+    let val = evt.target.value;
     let currentProductState = Object.assign({}, this.state.product);
     currentProductState[key] = val;
     this.setState({'product': currentProductState});
@@ -37,18 +40,25 @@ class AdminEditProduct extends Component {
     evt.preventDefault();
     const self = this;
     const {history} = this.props;
-    const {product} = this.state;
+    const {product, variantToSizeMapString} = this.state;
+    let payload = Object.assign({}, product);
+    payload.variantToSizeMap = variantToSizeMapString;
     const userToken = localStorage.getItem("auth_token");
-    axios.put(`${API_URL}/product`, {'product': product}, {'headers': {'token': userToken}}).then(function(response){
+    axios.put(`${API_URL}/product`, {'product': payload}, {'headers': {'token': userToken}}).then(function(response){
       self.props.fetchProductList();
       history.replace(`/admin`);
     })
   }
+
+  variantChanged = (evt) => {
+    this.setState({'variantToSizeMapString': evt.target.value});
+  }
   render() {
-    const {product} = this.state;
+    const {product, variantToSizeMapString} = this.state;
     if (isEmptyObject(product)) {
       return <span />
     }
+
     return (
       <div className="add-product-container">
         <form onSubmit={this.submitForm} className="app-form">
@@ -113,6 +123,19 @@ class AdminEditProduct extends Component {
             value={product.nftAddress}
             onChange={(evt)=>this.updateProductState('nftAddress', evt)}/>
           </Form.Group>
+          <Form.Group controlId="formProductBackImage">
+            <Form.Label>Fulfillment Product Id</Form.Label>
+            <Form.Control type="text" placeholder="Fulfillment Product ID (eg. Printify)"
+            value={product.fulfillmentProductId}
+            onChange={(evt)=>this.updateProductState('fulfillmentProductId', evt)}/>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Variant to size map</Form.Label>
+            <Form.Control as="textarea" rows={3} value={variantToSizeMapString}
+            onChange={(evt)=>this.variantChanged(evt)}
+             placeholder='{Enter json for variant to size map
+            eg. [{"variantType": "S", "variantTitle": "S / Black / 6 oz."}, {"variantType": "M", "variantTitle": "M / Black / 6 oz."}]}'/>
+          </Form.Group>
           <Form.Group controlId="formDisabledCheck">
             <Form.Check
             type={'checkbox'}
@@ -120,7 +143,8 @@ class AdminEditProduct extends Component {
             checked={product.isDisabled}
             onChange={this.toggleDisabledCheck}
             />
-      </Form.Group>
+          </Form.Group>
+
           <Button type="submit">Update</Button>
         </form>
         </div>
