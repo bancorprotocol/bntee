@@ -81,10 +81,15 @@ export default class ClaimProductDialog extends Component {
   render() {
     const {onHide, claimDialogVisible, redeemProduct} = this.props;
     const {selectedSizeOption, error} = this.state;
-    const sizeOptions =  availableSizeOptions.map(function(item, idx){
+    let variantOptions = availableSizeOptions;
+    if (redeemProduct && redeemProduct.variantToSizeMap && redeemProduct.variantToSizeMap.length > 0) {
+      variantOptions = redeemProduct.variantToSizeMap.map(function(item){
+        return item.variantType
+      })
+    }
+    const sizeOptions =  variantOptions.map(function(item, idx){
       return <option value={item}>{item}</option>
     });
-
     let errorDisplay = <span />;
     if (isNonEmptyString(error)) {
       errorDisplay = <div className="error">{error}</div>

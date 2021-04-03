@@ -275,9 +275,10 @@ router.get('/submit_fulfill_order', function(req, res){
         axios.get(`https://api.printify.com/v1/shops//products/${fulfillmentProductId}.json`).then(function(printerReponse){
           const productData = printerReponse.data;
           const orderSize = orderResponse.shirtSize.toUpperCase().trim();
-          const variantTitle = `${orderSize} / Black / 6 oz.`;
+          const productAvailableVariants = productResponse.variantToSizeMap;
+          const productVariantNeeded = productAvailableVariants.find((pav) => (pav.variantType === orderSize));
+          const variantTitle = productVariantNeeded.variantTitle;
           const variant = productData.variants.find((v) => (v.title === variantTitle));
-
         });
       });
     })
@@ -302,10 +303,11 @@ router.get(`/fulfillment_order_details`, function(req, res){
         axios.get(FULFILLMENT_URL, HEADER).then(function(printerReponse){
           const printerReponseData = printerReponse.data;
           const orderSize = orderResponse.shirtSize.toUpperCase().trim();
-          const productMap = JSON.parse(productResponse.variantToSizeMap);
-          console.log(productMap);
-          const variantTitle = `${orderSize} / Black / 6 oz.`;
+          const productAvailableVariants = productResponse.variantToSizeMap;
+          const productVariantNeeded = productAvailableVariants.find((pav) => (pav.variantType === orderSize));
+          const variantTitle = productVariantNeeded.variantTitle;
           const variant = printerReponseData.variants.find((v) => (v.title === variantTitle));
+
           const payload = {
             product: productResponse,
             order: orderResponse,
