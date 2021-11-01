@@ -71,9 +71,6 @@ export default class ProductDisplay extends Component {
           <div className="app-info-container">
             <Row>
               <Col lg={6} xs={6} className="card-pricing-info">
-                <div>
-                  {totalRedeemed} Redeemed
-                </div>
                 <div className="card-available">
                   {tokensInPool} / {maximumTokens} available
                 </div>
@@ -92,11 +89,8 @@ export default class ProductDisplay extends Component {
           </Col>
         </Row>
         <Row className="sell-container">
-          <Col lg={6}>
+          <Col lg={12}>
             <Button className="sell-btn" onClick={()=>this.props.sellToken(currentProduct)}>Sell</Button>
-          </Col>
-          <Col lg={6}>
-            <Button className="sell-btn" onClick={()=>this.props.redeemToken(currentProduct)}>Redeem</Button>
           </Col>
         </Row>
         </div>
