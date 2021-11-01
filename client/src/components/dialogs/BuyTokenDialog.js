@@ -183,9 +183,6 @@ export default class BuyTokenDialog extends Component {
                   <div className="total-container">
                     Total {returnPrice.priceUSD ? new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(returnPrice.priceUSD) : ''}
                   </div>
-                  <div className="total-sub">
-                    Each token is redeemable for 1 {buyProduct.productName} shirt.
-                  </div>
                 </Col>
                 <Col lg={5}>
                   {errorMessageDisplay}
