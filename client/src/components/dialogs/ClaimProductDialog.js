@@ -117,6 +117,13 @@ export default class ClaimProductDialog extends Component {
           <div className="claim-product-label">
             Please fill in the order details to receive your purchase.
           </div>
+          <div className="claim-product-label claim-product-sublabel">
+
+            <div>&#9888;&nbsp;You can only redeem one product at a time.
+            Check the "redeemable items" tab at the top of the shop to redeem additional items
+            after completing this order.&nbsp;&#9888;</div>
+
+          </div>
         <div className="claim-address-form">
         <Form onSubmit={this.submitClaimForm}>
         <Form.Group>
