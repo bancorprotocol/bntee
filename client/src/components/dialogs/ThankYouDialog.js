@@ -16,6 +16,10 @@ export default class ThankYouDialog extends Component {
           <div className="nft-claim-btn">
             <a href={`${productClaim.openseaLink}`} target="_blank">Click here to claim your NFTee</a>
           </div>
+          <div className="thankyou-footer">
+            <div>See the "redeemable items" tab to view remaining physical items</div>
+            <div>that you are eligible to claim.</div>
+          </div>
         </div>
       </Modal>
       )
