@@ -17,7 +17,7 @@
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.11.13",
+    "mongoose": "^5.13.20",
     "morgan": "~1.9.1",
     "opensea-js": "^1.1.11",
     "slimbot": "^5.0.0",
